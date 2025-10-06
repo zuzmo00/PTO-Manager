@@ -4,10 +4,11 @@ namespace PTO_Manager.Entities
 {
     public class Log
     {
-        [Key]
+        [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public required string Megjegyzes { get; set; }
         public DateOnly Datum { get; set; }
+        public required string Leiras { get; set; }
+        
 
     }
 }
