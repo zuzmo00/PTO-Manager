@@ -7,6 +7,6 @@ namespace PTO_Manager.Entities
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         public DateOnly Datum { get; set; }
-        public DateOnly Szunet { get; set; }
+        public bool MukaszunetiNap { get; set; }
     }
 }

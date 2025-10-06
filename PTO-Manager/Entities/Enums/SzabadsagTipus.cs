@@ -4,6 +4,6 @@ public enum SzabadsagTipus
 {
     Fizetett,
     FizetesNelkuli,
-    BetegsegMiatti,
-    Egyeb
+    Betegseg,
+    Betervezett
 }
