@@ -1,12 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PTO_Manager.Entities
 {
     public class Ugyintezok
     {
-        [Key]
+        [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public int Torzsszam { get; set; }
-        public string Email { get; set; }
+        
+        [ForeignKey("Szemely")]
+        public Guid SzemelyId { get; set; }
+        public Szemelyek Szemely { get; set; }
+        
+        [ForeignKey("Reszleg")]
+        public int ReszlegId { get; set; }
+        public Reszleg Reszleg { get; set; }
+        
+       public bool Kerhet { get; set; }
+       public bool Biralhat { get; set; }
+       public bool Visszavonhat { get; set; }
     }
 }
