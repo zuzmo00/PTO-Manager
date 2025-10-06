@@ -6,7 +6,8 @@ namespace PTO_Manager.Entities
     {
         [Key]
         public Guid Id { get; set; }= Guid.NewGuid();
-        public string Name { get; set; }
+        public string Nev { get; set; }
+        public int Torzsszam { get; set; }
         public int ReszlegId { get; set; }
         public int Jelszo { get; set; }
         public string Email { get; set; }
