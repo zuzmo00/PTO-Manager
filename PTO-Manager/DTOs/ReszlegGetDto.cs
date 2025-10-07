@@ -2,9 +2,9 @@ namespace PTO_Manager.DTOs;
 
 public class ReszlegGetDto
 {
-    public int ReszlegId { get; set; }
+    public int reszlegId { get; set; }
         
-    public bool Kerhet { get; set; }
-    public bool Biralhat { get; set; }
-    public bool Visszavonhat { get; set; }
+    public bool kerhet { get; set; }
+    public bool biralhat { get; set; }
+    public bool visszavonhat { get; set; }
 }
