@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using PTO_Manager.Context;
@@ -16,14 +17,20 @@ namespace PTO_Manager.Services
         Task<string> Login(LoginInputDto loginInputDto);
         Task<string> GenerateToken(Szemelyek user);
         Task<ClaimsIdentity> GetClaimsIdentity(Szemelyek user);
+        Task<Guid> Register(UserRegisterDto userRegisterDto);
     }
     public class UserServices : IUserServices
     {
         private readonly AppDbContext _dbContext;
         private readonly IConfiguration _configuration;
-        public UserServices(AppDbContext dbContext)
+        private readonly IMapper mapper;
+        public UserServices(AppDbContext dbContext,IMapper mapper, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _configuration = configuration;
+            this.mapper = mapper;
+
+
         }
 
         public async Task<string> GenerateToken(Szemelyek user)
@@ -62,5 +69,21 @@ namespace PTO_Manager.Services
             return await GenerateToken(user);
         }
 
+        public async Task<Guid> Register(UserRegisterDto userRegisterDto)
+        {
+            var email = await _dbContext.Szemelyek.FirstOrDefaultAsync(x=>x.Email==userRegisterDto.Email);
+            if (email != null)
+            {
+                throw new Exception("User already in use");
+            }
+            var user = mapper.Map<Szemelyek>(userRegisterDto);
+            user.FennmaradoNapok = new FennmaradoNapok
+            {
+                OsszeesSzab = userRegisterDto.FennmaradoNapok,
+            };
+            await _dbContext.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
+            return user.Id;
+        }
     }
 }

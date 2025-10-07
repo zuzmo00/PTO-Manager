@@ -34,5 +34,24 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpPost]
+        [Route("Register")]
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var id = await _userService.Register(user);
+                response.Data = id;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
     }
 }
