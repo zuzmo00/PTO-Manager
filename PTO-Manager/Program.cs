@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection"); //Ezt kell atirni majd 
+    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection"); 
     optionsBuilder.UseSqlServer(connectionString);
 });
 

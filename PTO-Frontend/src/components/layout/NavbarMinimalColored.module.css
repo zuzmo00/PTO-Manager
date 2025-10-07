@@ -1,0 +1,86 @@
+﻿.iconButton {
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-right: var(--mantine-spacing-sm);
+}
+
+.navbar {
+    /* fix magasság helyett teljes nézetmagasság + flex oszlop */
+    height: 100%;
+    min-height: 100dvh;
+    padding: var(--mantine-spacing-md);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #f1f1f1;
+
+    /* fontos, hogy a gyerek (navbarMain) tudjon ténylegesen görögni */
+    min-block-size: 0;
+}
+
+.navbarMain {
+    /* a menü középső része töltsön ki és legyen görgethető */
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.header {
+    padding-bottom: var(--mantine-spacing-md);
+    margin-bottom: calc(var(--mantine-spacing-md) * 1.5);
+    border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.footer {
+    /* absolute pozicionálás helyett auto margin, hogy mindig alul legyen */
+    margin-top: auto;
+    padding-top: var(--mantine-spacing-md);
+    border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: var(--mantine-font-size-sm);
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+    border-radius: var(--mantine-radius-sm);
+    font-weight: 500;
+
+    &:hover {
+        background-color: var(--mantine-color-gray-2);
+        color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+        cursor: pointer;
+    }
+
+    &[data-active] {
+        &,
+        &:hover {
+            background-color: var(--mantine-color-gray-2);
+        }
+    }
+}
+
+.inactiveLink {
+    min-height: 50px;
+    border-radius: var(--mantine-radius-md);
+    color: var(--mantine-color-gray-5);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: var(--mantine-font-size-sm);
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+    font-weight: 500;
+}
+
+.linkIcon {
+    color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
+    width: rem(25px);
+    height: rem(25px);
+}
+
+.unstyledButtonClick {
+    /* idézőjelek nélkül legyen érvényes a -webkit-fill-available */
+    min-width: -webkit-fill-available;
+}
