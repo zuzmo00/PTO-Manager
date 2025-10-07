@@ -12,9 +12,9 @@ namespace PTO_Manager.Entities
         public Guid SzemelyId { get; set; }
         public Szemelyek Szemely { get; set; }
         
-        public DateOnly Ev { get; set; } 
+        public DateOnly Ev { get; set; } = DateOnly.FromDateTime(DateTime.Now);
         public int OsszeesSzab { get; set; }
-        public int EddigKivett { get; set; }
-        public int Fuggoben { get; set; }
+        public int EddigKivett { get; set; } = 0;
+        public int Fuggoben { get; set; }=0;
     }
 }
