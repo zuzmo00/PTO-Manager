@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PTO_Manager;
 using PTO_Manager.Additional;
 using PTO_Manager.Context;
 
@@ -13,10 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection"); 
+    var connectionString = builder.Configuration.GetConnectionString("AdrianConnection"); 
     optionsBuilder.UseSqlServer(connectionString);
 });
 

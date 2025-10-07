@@ -15,7 +15,7 @@ namespace PTO_Manager.Entities
         public int ReszlegId { get; set; }
         public Reszleg Reszleg { get; set; }
         
-        public Roles Role { get; set; }
+        public Roles Role { get; set; }=Roles.User;
         public string Email { get; set; }
         public string Jelszo { get; set; }
         
