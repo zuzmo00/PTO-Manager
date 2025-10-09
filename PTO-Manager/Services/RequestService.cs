@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PTO_Manager.Context;
 using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
+using SzabadsagKezeloWebApp.Services;
 
 namespace PTO_Manager.Services
 {
@@ -17,10 +18,12 @@ namespace PTO_Manager.Services
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        public RequestService(AppDbContext dbContext, IMapper mapper)
+        private readonly IAktualisFelhasznaloService _aktualisFelhasznaloService;
+        public RequestService(AppDbContext dbContext, IMapper mapper, IAktualisFelhasznaloService aktualisFelhasznaloService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _aktualisFelhasznaloService = aktualisFelhasznaloService;
         }
         public Task<Guid> AcceptRequest(Guid id)
         {
@@ -35,6 +38,7 @@ namespace PTO_Manager.Services
                 throw new Exception("Request already exists for this date");
             }
             var newRequest = _mapper.Map<Request>(requestAddDto);
+            newRequest.SzemelyId=Guid.Parse(_aktualisFelhasznaloService.Torzs);
             await _dbContext.Requests.AddAsync(newRequest);
             await _dbContext.SaveChangesAsync();
             return newRequest.Id;

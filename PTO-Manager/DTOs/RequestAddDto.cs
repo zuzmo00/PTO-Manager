@@ -5,7 +5,6 @@ namespace PTO_Manager.DTOs
 {
     public class RequestAddDto
     {
-        public Guid SzemelyId { get; set; }
         public DateOnly Datum { get; set; }
         public SzabadsagTipus Tipus { get; set; }
     }
