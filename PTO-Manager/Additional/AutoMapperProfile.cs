@@ -17,9 +17,12 @@ public class AutoMapperProfile: Profile
         
          */
 
-        CreateMap<Szemelyek, Kerelmek>().ReverseMap();
-        CreateMap<Szemelyek, UserRegisterDto>().ReverseMap()
+        CreateMap<User, Request>().ReverseMap();
+        CreateMap<User, UserRegisterDto>().ReverseMap()
             .ForMember(dest => dest.FennmaradoNapok, opt => opt.Ignore())
             .ForMember(dest => dest.Jelszo, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Jelszo)));
+
+        CreateMap<SpecialDays, SpecialDaysAddDto>().ReverseMap();
+        CreateMap<SpecialDays, SpecialDaysGetDto>().ReverseMap();
     }
 }

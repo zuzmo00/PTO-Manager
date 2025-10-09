@@ -10,6 +10,7 @@ namespace PTO_Manager
             Services.AddEndpointsApiExplorer();
             Services.AddHttpClient();
             Services.AddScoped<IUserServices, UserServices>();
+            Services.AddScoped<ISpecialDaysService, SpecialDaysService>();
         }
     }
 }

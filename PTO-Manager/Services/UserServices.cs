@@ -15,8 +15,8 @@ namespace PTO_Manager.Services
     public interface IUserServices
     {
         Task<string> Login(LoginInputDto loginInputDto);
-        Task<string> GenerateToken(Szemelyek user);
-        Task<ClaimsIdentity> GetClaimsIdentity(Szemelyek user);
+        Task<string> GenerateToken(User user);
+        Task<ClaimsIdentity> GetClaimsIdentity(User user);
         Task<Guid> Register(UserRegisterDto userRegisterDto);
     }
     public class UserServices : IUserServices
@@ -33,7 +33,7 @@ namespace PTO_Manager.Services
 
         }
 
-        public async Task<string> GenerateToken(Szemelyek user)
+        public async Task<string> GenerateToken(User user)
         {
             var id = await GetClaimsIdentity(user);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
@@ -44,7 +44,7 @@ namespace PTO_Manager.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
 
         }
-        public Task<ClaimsIdentity> GetClaimsIdentity(Szemelyek user)
+        public Task<ClaimsIdentity> GetClaimsIdentity(User user)
         {
             var claims = new List<Claim>
             {
@@ -61,7 +61,7 @@ namespace PTO_Manager.Services
 
         public async Task<string> Login(LoginInputDto userLoginDto)
         {
-            var user = await _dbContext.Szemelyek.FirstOrDefaultAsync(x => x.Email == userLoginDto.Email);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == userLoginDto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Jelszo, user.Jelszo))
             {
                 throw new UnauthorizedAccessException("Wrong email or password");
@@ -71,13 +71,13 @@ namespace PTO_Manager.Services
 
         public async Task<Guid> Register(UserRegisterDto userRegisterDto)
         {
-            var email = await _dbContext.Szemelyek.FirstOrDefaultAsync(x=>x.Email==userRegisterDto.Email);
+            var email = await _dbContext.Users.FirstOrDefaultAsync(x=>x.Email==userRegisterDto.Email);
             if (email != null)
             {
                 throw new Exception("User already in use");
             }
-            var user = mapper.Map<Szemelyek>(userRegisterDto);
-            user.FennmaradoNapok = new FennmaradoNapok
+            var user = mapper.Map<User>(userRegisterDto);
+            user.FennmaradoNapok = new RemainingDay
             {
                 OsszeesSzab = userRegisterDto.FennmaradoNapok,
             };

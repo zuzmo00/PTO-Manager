@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PTO_Manager.Context;
 
@@ -11,9 +12,11 @@ using PTO_Manager.Context;
 namespace PTO_Manager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251009113213_NameChanges")]
+    partial class NameChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,51 +25,71 @@ namespace PTO_Manager.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PTO_Manager.Entities.Admin", b =>
+            modelBuilder.Entity("PTO_Manager.Entities.FennmaradoNapok", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Biralhat")
-                        .HasColumnType("bit");
+                    b.Property<int>("EddigKivett")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("Kerhet")
-                        .HasColumnType("bit");
+                    b.Property<DateOnly>("Ev")
+                        .HasColumnType("date");
 
-                    b.Property<int>("ReszlegId")
+                    b.Property<int>("Fuggoben")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OsszeesSzab")
                         .HasColumnType("int");
 
                     b.Property<Guid>("SzemelyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Visszavonhat")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ReszlegId");
+                    b.HasIndex("SzemelyId")
+                        .IsUnique();
 
-                    b.HasIndex("SzemelyId");
-
-                    b.ToTable("Administrators");
+                    b.ToTable("FennmaradoNapok");
                 });
 
-            modelBuilder.Entity("PTO_Manager.Entities.Department", b =>
+            modelBuilder.Entity("PTO_Manager.Entities.Kerelmek", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateOnly>("Datum")
+                        .HasColumnType("date");
 
-                    b.Property<string>("ReszlegNev")
+                    b.Property<Guid>("KerelemSzam")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Megjegyzes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateOnly>("ModositasiIdo")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("MosdositoSzemelyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Statusz")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SzemelyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Tipus")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Department");
+                    b.HasIndex("SzemelyId");
+
+                    b.ToTable("Kerelmek");
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.Log", b =>
@@ -105,71 +128,21 @@ namespace PTO_Manager.Migrations
                     b.ToTable("Preferenciak");
                 });
 
-            modelBuilder.Entity("PTO_Manager.Entities.RemainingDay", b =>
+            modelBuilder.Entity("PTO_Manager.Entities.Reszleg", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("EddigKivett")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("Ev")
-                        .HasColumnType("date");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Fuggoben")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OsszeesSzab")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SzemelyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SzemelyId")
-                        .IsUnique();
-
-                    b.ToTable("Remaining");
-                });
-
-            modelBuilder.Entity("PTO_Manager.Entities.Request", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateOnly>("Datum")
-                        .HasColumnType("date");
-
-                    b.Property<Guid>("KerelemSzam")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Megjegyzes")
+                    b.Property<string>("ReszlegNev")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("ModositasiIdo")
-                        .HasColumnType("date");
-
-                    b.Property<Guid>("MosdositoSzemelyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Statusz")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SzemelyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Tipus")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SzemelyId");
-
-                    b.ToTable("Requests");
+                    b.ToTable("Reszleg");
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.SpecialDays", b =>
@@ -181,15 +154,15 @@ namespace PTO_Manager.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<bool>("IsWorkingDay")
+                    b.Property<bool>("IsWOrkingDay")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.ToTable("SpecialDays");
+                    b.ToTable("KulonlegesNapok");
                 });
 
-            modelBuilder.Entity("PTO_Manager.Entities.User", b =>
+            modelBuilder.Entity("PTO_Manager.Entities.Szemelyek", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -220,18 +193,81 @@ namespace PTO_Manager.Migrations
 
                     b.HasIndex("ReszlegId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Szemelyek");
                 });
 
-            modelBuilder.Entity("PTO_Manager.Entities.Admin", b =>
+            modelBuilder.Entity("PTO_Manager.Entities.Ugyintezok", b =>
                 {
-                    b.HasOne("PTO_Manager.Entities.Department", "Reszleg")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Biralhat")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Kerhet")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ReszlegId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SzemelyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Visszavonhat")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReszlegId");
+
+                    b.HasIndex("SzemelyId");
+
+                    b.ToTable("Ugyintezok");
+                });
+
+            modelBuilder.Entity("PTO_Manager.Entities.FennmaradoNapok", b =>
+                {
+                    b.HasOne("PTO_Manager.Entities.Szemelyek", "Szemely")
+                        .WithOne("FennmaradoNapok")
+                        .HasForeignKey("PTO_Manager.Entities.FennmaradoNapok", "SzemelyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Szemely");
+                });
+
+            modelBuilder.Entity("PTO_Manager.Entities.Kerelmek", b =>
+                {
+                    b.HasOne("PTO_Manager.Entities.Szemelyek", "Szemely")
+                        .WithMany("Kerelmek")
+                        .HasForeignKey("SzemelyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Szemely");
+                });
+
+            modelBuilder.Entity("PTO_Manager.Entities.Szemelyek", b =>
+                {
+                    b.HasOne("PTO_Manager.Entities.Reszleg", "Reszleg")
                         .WithMany()
                         .HasForeignKey("ReszlegId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PTO_Manager.Entities.User", "Szemely")
+                    b.Navigation("Reszleg");
+                });
+
+            modelBuilder.Entity("PTO_Manager.Entities.Ugyintezok", b =>
+                {
+                    b.HasOne("PTO_Manager.Entities.Reszleg", "Reszleg")
+                        .WithMany()
+                        .HasForeignKey("ReszlegId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PTO_Manager.Entities.Szemelyek", "Szemely")
                         .WithMany("Ugyintezo")
                         .HasForeignKey("SzemelyId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -242,40 +278,7 @@ namespace PTO_Manager.Migrations
                     b.Navigation("Szemely");
                 });
 
-            modelBuilder.Entity("PTO_Manager.Entities.RemainingDay", b =>
-                {
-                    b.HasOne("PTO_Manager.Entities.User", "Szemely")
-                        .WithOne("FennmaradoNapok")
-                        .HasForeignKey("PTO_Manager.Entities.RemainingDay", "SzemelyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Szemely");
-                });
-
-            modelBuilder.Entity("PTO_Manager.Entities.Request", b =>
-                {
-                    b.HasOne("PTO_Manager.Entities.User", "Szemely")
-                        .WithMany("Kerelmek")
-                        .HasForeignKey("SzemelyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Szemely");
-                });
-
-            modelBuilder.Entity("PTO_Manager.Entities.User", b =>
-                {
-                    b.HasOne("PTO_Manager.Entities.Department", "Reszleg")
-                        .WithMany()
-                        .HasForeignKey("ReszlegId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reszleg");
-                });
-
-            modelBuilder.Entity("PTO_Manager.Entities.User", b =>
+            modelBuilder.Entity("PTO_Manager.Entities.Szemelyek", b =>
                 {
                     b.Navigation("FennmaradoNapok")
                         .IsRequired();
