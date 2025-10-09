@@ -1,7 +1,6 @@
-﻿using PTO_Manager.Additional;
-using PTO_Manager.Services;
+﻿using PTO_Manager.Services;
 
-namespace PTO_Manager
+namespace PTO_Manager.Additional
 {
     public static class AddServices
     {
@@ -11,6 +10,7 @@ namespace PTO_Manager
             Services.AddHttpClient();
             Services.AddScoped<IUserServices, UserServices>();
             Services.AddScoped<ISpecialDaysService, SpecialDaysService>();
+            Services.AddScoped<IRequestService, RequestService>();
         }
     }
 }
