@@ -14,16 +14,16 @@ namespace PTO_Manager.Entities
         public Guid SzemelyId { get; set; }
         public User Szemely { get; set; }
         
-        public SzabStatusz Statusz { get; set; }
+        public SzabStatusz Statusz { get; set; }=SzabStatusz.Fuggoben;
         public DateOnly Datum { get; set; }
-        public Guid KerelemSzam { get; set; }
+        public Guid KerelemSzam { get; set; }=Guid.NewGuid();
         public SzabadsagTipus Tipus { get; set; }
         
-        public Guid MosdositoSzemelyId { get; set; }
-        public DateOnly ModositasiIdo { get; set; }
+        public Guid? MosdositoSzemelyId { get; set; }
+        public DateOnly? ModositasiIdo { get; set; }
         
-        public string Megjegyzes { get; set; }
+        public string? Megjegyzes { get; set; }=string.Empty;
 
-        
+
     }
 }
