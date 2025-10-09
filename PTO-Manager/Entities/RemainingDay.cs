@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PTO_Manager.Entities
 {
-    public class FennmaradoNapok
+    public class RemainingDay
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         
         [ForeignKey("Szemely")]
         public Guid SzemelyId { get; set; }
-        public Szemelyek Szemely { get; set; }
+        public User Szemely { get; set; }
         
         public DateOnly Ev { get; set; } = DateOnly.FromDateTime(DateTime.Now);
         public int OsszeesSzab { get; set; }

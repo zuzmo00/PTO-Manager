@@ -2,12 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PTO_Manager.Entities;
 
-public class Reszleg
+public class Department
 {
     [Required,Key]
     public int Id { get; set; }
     public string ReszlegNev { get; set; }
     
-    List<Szemelyek>? Szemelyek { get; set; }
-    List<Ugyintezok>? Ugyintezok { get; set; }
+    List<User>? Szemelyek { get; set; }
+    List<Admin>? Ugyintezok { get; set; }
 }

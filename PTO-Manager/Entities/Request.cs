@@ -5,14 +5,14 @@ using PTO_Manager.Entities.Enums;
 namespace PTO_Manager.Entities
 {
  
-    public class Kerelmek
+    public class Request
     {
         [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         
         [ForeignKey("Szemely")]
         public Guid SzemelyId { get; set; }
-        public Szemelyek Szemely { get; set; }
+        public User Szemely { get; set; }
         
         public SzabStatusz Statusz { get; set; }
         public DateOnly Datum { get; set; }

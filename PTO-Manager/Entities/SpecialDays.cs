@@ -2,11 +2,11 @@
 
 namespace PTO_Manager.Entities
 {
-    public class KulonlegesNapok
+    public class SpecialDays
     {
         [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public DateOnly Datum { get; set; }
-        public bool MukaszunetiNap { get; set; }
+        public DateOnly Date { get; set; }
+        public bool IsWorkingDay { get; set; }
     }
 }
