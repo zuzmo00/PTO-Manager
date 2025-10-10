@@ -5,8 +5,10 @@ export default interface AuthContext{
     setToken: (token: string | null) => void;
     nev: string | null;
     setNev: (nev: string | null) =>void;
+    email: string | null;
+    setEmail: (email: string | null) =>void;
     reszleg:string | null;
-    setReszleg: (nev: string | null) =>void;
+    setReszleg: (reszleg: string | null) =>void;
     role: string | null;
     setRole: (role: string) => void;
     ugyintezoiJogosultsagok: UgyintezoiJogosultsag[] | null;
