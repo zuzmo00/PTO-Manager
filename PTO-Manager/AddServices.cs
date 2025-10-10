@@ -11,6 +11,8 @@ namespace PTO_Manager
             Services.AddHttpClient();
             Services.AddScoped<IUserServices, UserServices>();
             Services.AddScoped<ISpecialDaysService, SpecialDaysService>();
+            Services.AddScoped<IDepartmentService, DepartmentService>();
+            Services.AddScoped<IAdminService, AdminService>();
         }
     }
 }

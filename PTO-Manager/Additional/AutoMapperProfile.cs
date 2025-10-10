@@ -24,5 +24,6 @@ public class AutoMapperProfile: Profile
 
         CreateMap<SpecialDays, SpecialDaysAddDto>().ReverseMap();
         CreateMap<SpecialDays, SpecialDaysGetDto>().ReverseMap();
+        CreateMap<Department, CreateDepartmentDto>().ReverseMap();
     }
 }

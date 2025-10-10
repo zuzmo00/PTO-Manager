@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using PTO_Manager.Context;
 using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
+using PTO_Manager.Entities.Enums;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -85,5 +86,7 @@ namespace PTO_Manager.Services
             await _dbContext.SaveChangesAsync();
             return user.Id;
         }
+
+       
     }
 }
