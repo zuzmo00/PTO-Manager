@@ -39,7 +39,7 @@ const Login = () => {
                 });
             } else {
                 form.setErrors({
-                    Torzsszam: "Ismeretlen hiba történt.",
+                    Email: "Ismeretlen hiba történt.",
                     password: "Ismeretlen hiba történt.",
                 });
             }
