@@ -1,6 +1,6 @@
-import type UgyintezoiJogosultsag from "./UgyintezoiJogosultsag.ts";
+import type AdminPrivileges from "./AdminPrivileges.ts";
 
 export type LoginResponse = {
     token: string
-    ugyintezoiJogosultsagok: UgyintezoiJogosultsag[]
+    adminPrivileges: AdminPrivileges[]
 };

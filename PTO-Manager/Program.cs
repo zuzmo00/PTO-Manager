@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PTO_Manager;
 using PTO_Manager.Additional;
 using PTO_Manager.Context;
 
@@ -18,12 +17,14 @@ builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("AdrianConnection"); 
+    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
+    //var connectionString = builder.Configuration.GetConnectionString(""); //Adrian
+    //var connectionString = builder.Configuration.GetConnectionString(""); //Eszti
     optionsBuilder.UseSqlServer(connectionString);
 });
 
 //Scoped
-builder.Services.AddServices();
+builder.Services.AddServicess();
 //Scoped\\
 //auth
 builder.Services.AddAuthorization(options =>
@@ -36,7 +37,18 @@ builder.Services.AddAuthorization(options =>
 //auth\\
 
 //Later Cors
-//builder.Services.AddCors();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 
 
 
@@ -107,7 +119,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 

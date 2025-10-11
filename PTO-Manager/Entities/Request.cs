@@ -10,20 +10,20 @@ namespace PTO_Manager.Entities
         [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         
-        [ForeignKey("Szemely")]
-        public Guid SzemelyId { get; set; }
-        public User Szemely { get; set; }
+        [ForeignKey("User")]
+        public Guid UserId { get; set; }
+        public User User { get; set; }
         
-        public SzabStatusz Statusz { get; set; }
-        public DateOnly Datum { get; set; }
-        public Guid KerelemSzam { get; set; }
+        public SzabStatusz Statusz { get; set; }=SzabStatusz.Fuggoben;
+        public DateOnly Date { get; set; }
+        public Guid KerelemSzam { get; set; }=Guid.NewGuid();
         public SzabadsagTipus Tipus { get; set; }
         
-        public Guid MosdositoSzemelyId { get; set; }
-        public DateOnly ModositasiIdo { get; set; }
+        public Guid? MosdositoSzemelyId { get; set; }
+        public DateOnly? ModositasiIdo { get; set; }
         
-        public string Megjegyzes { get; set; }
+        public string? Megjegyzes { get; set; }=string.Empty;
 
-        
+
     }
 }
