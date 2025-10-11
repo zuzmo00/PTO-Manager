@@ -52,7 +52,7 @@ namespace PTO_Manager.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Nev),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Sid, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Sid, user.ReszlegId.ToString()), // This will be used to send the department id
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
