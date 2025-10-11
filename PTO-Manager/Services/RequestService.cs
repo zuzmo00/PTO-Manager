@@ -29,7 +29,7 @@ namespace PTO_Manager.Services
 
         public async Task<Guid> CreateRequest(RequestAddDto requestAddDto)
         {
-            var request = await _dbContext.Requests.FirstOrDefaultAsync(x=>x.Datum==requestAddDto.Datum);
+            var request = await _dbContext.Requests.FirstOrDefaultAsync(x=>x.Date==requestAddDto.Datum);
             if (request != null)
             {
                 throw new Exception("Request already exists for this date");
