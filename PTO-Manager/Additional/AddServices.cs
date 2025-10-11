@@ -1,4 +1,4 @@
-﻿using PTO_Manager.Services;
+using PTO_Manager.Services;
 using SzabadsagKezeloWebApp.Services;
 
 namespace PTO_Manager.Additional
@@ -11,6 +11,8 @@ namespace PTO_Manager.Additional
             Services.AddHttpClient();
             Services.AddScoped<IUserServices, UserServices>();
             Services.AddScoped<ISpecialDaysService, SpecialDaysService>();
+            Services.AddScoped<IDepartmentService, DepartmentService>();
+            Services.AddScoped<IAdminService, AdminService>();
             Services.AddScoped<IRequestService, RequestService>();
             Services.AddScoped<IAktualisFelhasznaloService, AktualisFelhasznaloService>();
             Services.AddHttpContextAccessor();

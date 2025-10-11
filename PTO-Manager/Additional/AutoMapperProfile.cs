@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
 
@@ -24,6 +24,7 @@ public class AutoMapperProfile: Profile
 
         CreateMap<SpecialDays, SpecialDaysAddDto>().ReverseMap();
         CreateMap<SpecialDays, SpecialDaysGetDto>().ReverseMap();
+        CreateMap<Department, CreateDepartmentDto>().ReverseMap();
         CreateMap<Request, RequestAddDto>().ReverseMap();
         CreateMap<Request, RequiestGetDto>().ReverseMap();
     }
