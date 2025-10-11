@@ -1,4 +1,4 @@
 export default interface LoginDto {
-    Email: string;
-    Jelszo: string;
+    email: string;
+    jelszo: string;
 }

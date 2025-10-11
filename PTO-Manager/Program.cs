@@ -17,7 +17,9 @@ builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("AdrianConnection"); 
+    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
+    //var connectionString = builder.Configuration.GetConnectionString(""); //Adrian
+    //var connectionString = builder.Configuration.GetConnectionString(""); //Eszti
     optionsBuilder.UseSqlServer(connectionString);
 });
 
@@ -35,7 +37,18 @@ builder.Services.AddAuthorization(options =>
 //auth\\
 
 //Later Cors
-//builder.Services.AddCors();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 
 
 
@@ -106,7 +119,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 

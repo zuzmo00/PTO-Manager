@@ -5,7 +5,7 @@ import type {LoginResponse} from "../Interfaces/LoginResponse.ts";
 
 const Auth = {
     login: (dto: loginDto) =>
-        axiosInstance.post<ApiResponse<LoginResponse>>("/Bejelentkezes/login", dto)
+        axiosInstance.post<ApiResponse<LoginResponse>>("/api/User/Login", dto)
 }
 
 
