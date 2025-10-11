@@ -21,7 +21,7 @@ const useAuth = () => {
     const login = async (email: string, jelszo: string) => {
         // eslint-disable-next-line no-useless-catch
         try{
-            const response = await api.Auth.login({Email: email, Jelszo: jelszo});
+            const response = await api.Auth.login({email: email, jelszo: jelszo});
 
             if (response.data.success && response.data.data) {
                 const token = response.data.data.token;
