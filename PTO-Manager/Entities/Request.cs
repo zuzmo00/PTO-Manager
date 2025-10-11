@@ -10,12 +10,12 @@ namespace PTO_Manager.Entities
         [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         
-        [ForeignKey("Szemely")]
-        public Guid SzemelyId { get; set; }
-        public User Szemely { get; set; }
+        [ForeignKey("User")]
+        public Guid UserId { get; set; }
+        public User User { get; set; }
         
         public SzabStatusz Statusz { get; set; }=SzabStatusz.Fuggoben;
-        public DateOnly Datum { get; set; }
+        public DateOnly Date { get; set; }
         public Guid KerelemSzam { get; set; }=Guid.NewGuid();
         public SzabadsagTipus Tipus { get; set; }
         
