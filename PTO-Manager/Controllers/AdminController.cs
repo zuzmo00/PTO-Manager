@@ -32,5 +32,24 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpDelete]
+        [Route("RemoveDepartment")]
+        public async Task<IActionResult> RemoveDepartment([FromBody] Guid id, int reszlegId)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var result = await _adminService.RemoveDeparment(id, reszlegId);
+                response.Data = result;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
     }
 }
