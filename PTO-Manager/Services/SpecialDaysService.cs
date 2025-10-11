@@ -48,7 +48,7 @@ namespace PTO_Manager.Services
                 throw new Exception("Day dose not exists");
             }
             _context.SpecialDays.Remove(day);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return $"Teh day has been removed {day.Date}";
 
         }
