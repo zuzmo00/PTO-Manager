@@ -140,7 +140,7 @@ namespace PTO_Manager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateOnly>("Datum")
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
                     b.Property<Guid>("KerelemSzam")
@@ -158,15 +158,15 @@ namespace PTO_Manager.Migrations
                     b.Property<int>("Statusz")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("SzemelyId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Tipus")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("SzemelyId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Requests");
                 });
@@ -254,13 +254,13 @@ namespace PTO_Manager.Migrations
 
             modelBuilder.Entity("PTO_Manager.Entities.Request", b =>
                 {
-                    b.HasOne("PTO_Manager.Entities.User", "Szemely")
+                    b.HasOne("PTO_Manager.Entities.User", "User")
                         .WithMany("Kerelmek")
-                        .HasForeignKey("SzemelyId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Szemely");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.User", b =>

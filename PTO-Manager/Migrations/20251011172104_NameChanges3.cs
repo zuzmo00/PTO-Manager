@@ -6,11 +6,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PTO_Manager.Migrations
 {
     /// <inheritdoc />
-    public partial class CanBeNull : Migration
+    public partial class NameChanges3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Requests_Users_SzemelyId",
+                table: "Requests");
+
+            migrationBuilder.RenameColumn(
+                name: "SzemelyId",
+                table: "Requests",
+                newName: "UserId");
+
+            migrationBuilder.RenameColumn(
+                name: "Datum",
+                table: "Requests",
+                newName: "Date");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_Requests_SzemelyId",
+                table: "Requests",
+                newName: "IX_Requests_UserId");
+
             migrationBuilder.AlterColumn<Guid>(
                 name: "MosdositoSzemelyId",
                 table: "Requests",
@@ -34,11 +53,38 @@ namespace PTO_Manager.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Requests_Users_UserId",
+                table: "Requests",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Requests_Users_UserId",
+                table: "Requests");
+
+            migrationBuilder.RenameColumn(
+                name: "UserId",
+                table: "Requests",
+                newName: "SzemelyId");
+
+            migrationBuilder.RenameColumn(
+                name: "Date",
+                table: "Requests",
+                newName: "Datum");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_Requests_UserId",
+                table: "Requests",
+                newName: "IX_Requests_SzemelyId");
+
             migrationBuilder.AlterColumn<Guid>(
                 name: "MosdositoSzemelyId",
                 table: "Requests",
@@ -68,6 +114,14 @@ namespace PTO_Manager.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
                 oldNullable: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Requests_Users_SzemelyId",
+                table: "Requests",
+                column: "SzemelyId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }
