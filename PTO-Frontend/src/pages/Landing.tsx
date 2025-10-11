@@ -40,6 +40,12 @@ function Landing(){
     }
     >(null);
 
+    setSzabStat({
+        osszeszab: "20",
+        fennmaradt: "10",
+        idoaranyos: "10"
+        }
+    )
 
 
     const fetchData = async () => {
@@ -79,9 +85,28 @@ function Landing(){
                             const day = dayjs(date);
                             const daystring = day.format("YYYY-MM-DD");
 
-                            const isFoglalt = foglaltNapok
+                            let dayitem: ReservedDays | undefined = undefined
+                            const isHetvegeMunkanap: boolean = true; //Majd ide kell egy api
 
-                            if (isFoglalt) {}
+                            const isFoglalt = foglaltNapok?.some(nap => nap.reservedDay === daystring);
+                            if(isFoglalt){
+                                dayitem = foglaltNapok?.find(cday => cday.reservedDay === daystring);
+                            }
+
+
+                            let backgorundColor: string | undefined;
+                            let color : string | undefined;
+
+                            if(isHetvegeMunkanap && (day.day() === 6 || day.day() === 0)){
+                                backgorundColor = "gray"
+                                color = "red"
+                            }else if (!isFoglalt) {
+
+                            }else if(dayitem?.reservationType === 5) { //SpecialWorkDay
+
+                            }else if(dayitem?.reservationType === 6) { //SpecialHoliday
+
+                            }
 
                         }}
                         />
