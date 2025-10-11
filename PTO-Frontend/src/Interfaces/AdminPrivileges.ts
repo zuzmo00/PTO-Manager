@@ -1,4 +1,4 @@
-export default interface UgyintezoiJogosultsag {
+export default interface AdminPrivileges {
     reszlegId: number;
     kerhet: boolean;
     biralhat: boolean;

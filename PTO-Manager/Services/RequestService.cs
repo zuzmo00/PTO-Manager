@@ -38,7 +38,7 @@ namespace PTO_Manager.Services
                 throw new Exception("Request already exists for this date");
             }
             var newRequest = _mapper.Map<Request>(requestAddDto);
-            newRequest.SzemelyId=Guid.Parse(_aktualisFelhasznaloService.Torzs);
+            newRequest.UserId=Guid.Parse(_aktualisFelhasznaloService.Torzs);
             await _dbContext.Requests.AddAsync(newRequest);
             await _dbContext.SaveChangesAsync();
             return newRequest.Id;

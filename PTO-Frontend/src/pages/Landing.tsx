@@ -2,6 +2,7 @@ import {Box, Center, Container, Divider, LoadingOverlay, Paper, Text, Title} fro
 import {useEffect, useState} from "react";
 import { Calendar } from '@mantine/dates';
 import dayjs from "dayjs";
+import type ReservedDays from "../Interfaces/ReservedDays.ts";
 
 
 
@@ -9,13 +10,37 @@ function Landing(){
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [foglaltNapok, setFoglaltNapok] = useState<string[] | null>(null);
+    const [foglaltNapok, setFoglaltNapok] = useState<ReservedDays[] | null>(null);
+    setFoglaltNapok([
+        {
+            reservedDay: "2025-10-11",
+            reservationType: 1
+        },
+        {
+            reservedDay: "2025-10-14",
+            reservationType: 2
+        },
+        {
+            reservedDay: "2025-10-17",
+            reservationType: 3
+        },
+        {
+            reservedDay: "2025-10-20",
+            reservationType: 1
+        },
+        {
+            reservedDay: "2025-10-23",
+            reservationType: 1
+        },
+    ])
     const [szabStat, setSzabStat] = useState<null | {
      osszeszab:string;
      fennmaradt:string;
      idoaranyos:string;
     }
     >(null);
+
+
 
     const fetchData = async () => {
         setIsLoading(false);
@@ -54,7 +79,7 @@ function Landing(){
                             const day = dayjs(date);
                             const daystring = day.format("YYYY-MM-DD");
 
-                            const isFoglalt = foglaltNapok?.includes(date);
+                            const isFoglalt = foglaltNapok
 
                             if (isFoglalt) {}
 

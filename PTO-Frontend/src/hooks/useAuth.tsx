@@ -2,12 +2,12 @@ import api from "../api/api.ts";
 import {jwtDecode} from "jwt-decode";
 import {
     EmailKeyName, EmailTokenKey,
-    NevKeyName,
-    NevTokenKey,
-    ReszlegKeyName,
-    ReszlegTokenKey, RoleKeyName,
+    NameKeyName,
+    NameTokenKey,
+    DepartmentKeyName,
+    DepartmentTokenKey, RoleKeyName,
     RoleTokenKey,
-    TokenKeyName, UgyintezoiJogosultsagokKeyName
+    TokenKeyName, AdminPrivilegesKeyName
 } from "../constants/constants.ts";
 import {useContext} from "react";
 import {AuthContext} from "../context/AuthContext.tsx";
@@ -25,23 +25,23 @@ const useAuth = () => {
 
             if (response.data.success && response.data.data) {
                 const token = response.data.data.token;
-                const jogosultsagok = response.data.data.ugyintezoiJogosultsagok;
+                const privileges = response.data.data.adminPrivileges;
 
 
                 const decoded: any = jwtDecode(token);
-                const nev = decoded[NevTokenKey];
+                const nev = decoded[NameTokenKey];
                 const email = decoded[EmailTokenKey];
                 const szerep = decoded[RoleTokenKey];
-                const reszleg = decoded[ReszlegTokenKey];
+                const reszleg = decoded[DepartmentTokenKey];
 
                 setToken(token);
                 localStorage.setItem(TokenKeyName, token);
 
                 setNev(nev);
-                localStorage.setItem(NevKeyName, nev);
+                localStorage.setItem(NameKeyName, nev);
 
                 setReszleg(reszleg);
-                localStorage.setItem(ReszlegKeyName, reszleg);
+                localStorage.setItem(DepartmentKeyName, reszleg);
 
                 setEmail(email);
                 localStorage.setItem(EmailKeyName, email);
@@ -49,8 +49,8 @@ const useAuth = () => {
                 setRole(szerep);
                 localStorage.setItem(RoleKeyName, szerep);
 
-                setUgyintezoiJogosultsagok(jogosultsagok);
-                localStorage.setItem(UgyintezoiJogosultsagokKeyName, JSON.stringify(jogosultsagok));
+                setUgyintezoiJogosultsagok(privileges);
+                localStorage.setItem(AdminPrivilegesKeyName, JSON.stringify(privileges));
             }else {
                 throw new Error(response.data.message || "Ismeretlen hiba");
             }
