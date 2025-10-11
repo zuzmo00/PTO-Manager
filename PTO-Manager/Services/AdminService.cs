@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using PTO_Manager.Context;
+using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
 using PTO_Manager.Entities.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,6 +12,8 @@ namespace PTO_Manager.Services
     {
         public Task<string> CreateAdmin(Guid id, int reszlegId);
         public Task<string> RemoveDeparment(Guid id, int reszlegId);
+        public Task<string> ChangePermissions(PermissionUpdateDto permissionUpdateDto);
+        public Task<string> AddDepartment(Guid id, int reszlegId);
     }
     public class AdminService : IAdminService
     {
@@ -19,6 +23,45 @@ namespace PTO_Manager.Services
         {
             _context = context;
             _mapper = mapper;
+        }
+
+        public async Task<string> AddDepartment(Guid id, int reszlegId)
+        {
+            var adminInTable = await _context.Administrators.FirstOrDefaultAsync(x=>x.SzemelyId==id);
+            var user = await _context.Users.FirstOrDefaultAsync(x=>x.Id==id);
+            if (adminInTable == null)
+            {
+                throw new Exception("Admin not found");
+            }
+            Admin admin = new Admin
+            {
+                SzemelyId = id,
+                ReszlegId = reszlegId,
+                Kerhet = true,
+                Visszavonhat = true,
+                Biralhat = true,
+            };
+            await _context.Administrators.AddAsync(admin);
+            user.Ugyintezo ??= new List<Admin>();
+            user.Ugyintezo.Add(admin);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return "Department added successfully";
+        }
+
+        public async Task<string> ChangePermissions(PermissionUpdateDto permissionUpdateDto)
+        {
+            var admin = await _context.Administrators.FirstOrDefaultAsync(x => x.SzemelyId == permissionUpdateDto.id && x.ReszlegId == permissionUpdateDto.reszlegId);
+            if (admin == null)
+            {
+                throw new Exception("Admin not found");
+            }
+            admin.Kerhet = permissionUpdateDto.kerhet;
+            admin.Visszavonhat = permissionUpdateDto.visszavonhat;
+            admin.Biralhat = permissionUpdateDto.biralhat;
+            _context.Administrators.Update(admin);
+            await _context.SaveChangesAsync();
+            return "Permissions changed successfully";
         }
 
         public async Task<string> CreateAdmin(Guid id, int reszlegId)

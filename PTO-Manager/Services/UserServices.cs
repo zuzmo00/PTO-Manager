@@ -15,7 +15,7 @@ namespace PTO_Manager.Services
 {
     public interface IUserServices
     {
-        Task<string> Login(LoginInputDto loginInputDto);
+        Task<LoginReturnDto> Login(LoginInputDto loginInputDto);
         Task<string> GenerateToken(User user);
         Task<ClaimsIdentity> GetClaimsIdentity(User user);
         Task<Guid> Register(UserRegisterDto userRegisterDto);
@@ -52,7 +52,7 @@ namespace PTO_Manager.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Nev),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Sid, user.ReszlegId.ToString()), // This will be used to send the department id
+                new Claim(ClaimTypes.Sid, user.ReszlegId.ToString()), 
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
@@ -60,14 +60,40 @@ namespace PTO_Manager.Services
         }
 
 
-        public async Task<string> Login(LoginInputDto userLoginDto)
+        public async Task<LoginReturnDto> Login(LoginInputDto userLoginDto)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == userLoginDto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Jelszo, user.Jelszo))
             {
                 throw new UnauthorizedAccessException("Wrong email or password");
             }
-            return await GenerateToken(user);
+            List<AdminPrivilegesDto> adminPrivilegesList = new List<AdminPrivilegesDto>();
+            if (user.Role == Roles.Administrator)
+            {
+                var admin = await _dbContext.Administrators.Where(x => x.SzemelyId == user.Id).ToListAsync();
+                foreach (var item in admin)
+                {
+                    AdminPrivilegesDto adminPrivilegesDto = new AdminPrivilegesDto
+                    {
+                        kerhet = item.Kerhet,
+                        visszavonhat = item.Visszavonhat,
+                        biralhat = item.Biralhat,
+                        reszlegId = item.ReszlegId,
+                    };
+                    adminPrivilegesList.Add(adminPrivilegesDto);
+                }
+                LoginReturnDto loginReturnDto = new LoginReturnDto
+                {
+                    token = await GenerateToken(user),
+                    adminPrivileges = adminPrivilegesList
+                };
+                return loginReturnDto;
+            }
+            return new LoginReturnDto
+            {
+                token = await GenerateToken(user),
+                adminPrivileges = null
+            };
         }
 
         public async Task<Guid> Register(UserRegisterDto userRegisterDto)

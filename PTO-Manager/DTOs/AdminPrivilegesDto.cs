@@ -1,6 +1,6 @@
 ﻿namespace PTO_Manager.DTOs;
 
-public class AdminPrivileges
+public class AdminPrivilegesDto
 {
     public int reszlegId { get; set; }
     public bool kerhet { get; set; }
