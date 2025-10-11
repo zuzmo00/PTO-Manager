@@ -39,5 +39,24 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpPost]
+        [Route("GetAllRequests")]
+        public async Task<IActionResult> GetAllRequests([FromBody] Guid id)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.GetAllRequestsAndSpecialDays(id);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
     }
 }
