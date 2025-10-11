@@ -1,26 +1,26 @@
 import {createContext} from "react";
 import type AuthContextType from "../Interfaces/AuthContext.ts";
-import type UgyintezoiJogosultsag from "../Interfaces/UgyintezoiJogosultsag.ts";
+import type AdminPrivileges from "../Interfaces/AdminPrivileges.ts";
 import {
     EmailKeyName,
-    NevKeyName,
-    ReszlegKeyName,
+    NameKeyName,
+    DepartmentKeyName,
     RoleKeyName,
     TokenKeyName,
-    UgyintezoiJogosultsagokKeyName
+    AdminPrivilegesKeyName
 } from "../constants/constants.ts";
 
 export const AuthContext = createContext<AuthContextType>({
     token: localStorage.getItem(TokenKeyName),
     setToken: () => {},
-    nev: localStorage.getItem(NevKeyName),
+    nev: localStorage.getItem(NameKeyName),
     setNev: () => {},
     email: localStorage.getItem(EmailKeyName),
     setEmail: () => {},
-    reszleg:localStorage.getItem(ReszlegKeyName),
+    reszleg:localStorage.getItem(DepartmentKeyName),
     setReszleg: () => {},
     role: localStorage.getItem(RoleKeyName),
     setRole: () => {},
-    ugyintezoiJogosultsagok: JSON.parse(localStorage.getItem(UgyintezoiJogosultsagokKeyName) || 'null') as UgyintezoiJogosultsag[] | null,
+    ugyintezoiJogosultsagok: JSON.parse(localStorage.getItem(AdminPrivilegesKeyName) || 'null') as AdminPrivileges[] | null,
     setUgyintezoiJogosultsagok: () => {}
 })

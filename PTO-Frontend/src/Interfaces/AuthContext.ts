@@ -1,4 +1,4 @@
-import type UgyintezoiJogosultsag from "./UgyintezoiJogosultsag.ts";
+import type AdminPrivileges from "./AdminPrivileges.ts";
 
 export default interface AuthContext{
     token: string | null;
@@ -11,6 +11,6 @@ export default interface AuthContext{
     setReszleg: (reszleg: string | null) =>void;
     role: string | null;
     setRole: (role: string) => void;
-    ugyintezoiJogosultsagok: UgyintezoiJogosultsag[] | null;
-    setUgyintezoiJogosultsagok: (reszlegJogosultsagok: UgyintezoiJogosultsag[] | null) => void;
+    ugyintezoiJogosultsagok: AdminPrivileges[] | null;
+    setUgyintezoiJogosultsagok: (reszlegJogosultsagok: AdminPrivileges[] | null) => void;
 }
