@@ -1,13 +1,15 @@
 import axios from 'axios';
 import { TokenKeyName } from '../constants/constants.ts';
 
-const isDev = import.meta.env.DEV;
+//const isDev = import.meta.env.DEV;
 
 // DEV módban a baseURL legyen relatív `/api`, hogy Vite proxy működjön.
 // PROD módban jöhet az env-ből.
-const baseURL = isDev
-    ? '/api'
-    : import.meta.env.VITE_REST_API_URL || '/api';
+//const baseURL = isDev
+//    ? '/api'
+//    : import.meta.env.VITE_REST_API_URL || '/api';
+
+const baseURL = import.meta.env.VITE_REST_API_URL || '/api';
 
 const axiosInstance = axios.create({ baseURL });
 

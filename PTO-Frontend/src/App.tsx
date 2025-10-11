@@ -1,6 +1,8 @@
 import "@mantine/core/styles.css";
+import '@mantine/dates/styles.css';
 import {useState} from "react";
 import {
+    EmailKeyName,
     NevKeyName,
     ReszlegKeyName,
     RoleKeyName,
@@ -21,6 +23,7 @@ function App() {
     const [nev, setNev] = useState(localStorage.getItem(NevKeyName));
     const [reszleg,setReszleg] = useState(localStorage.getItem(ReszlegKeyName));
     const [role, setRole] = useState(localStorage.getItem(RoleKeyName));
+    const [email, setEmail] = useState(localStorage.getItem(EmailKeyName));
     const [ugyintezoiJogosultsagok, setUgyintezoiJogosultsagok] = useState(() => {
         const raw = localStorage.getItem(UgyintezoiJogosultsagokKeyName);
         return raw ? JSON.parse(raw) : null;
@@ -30,7 +33,7 @@ function App() {
     return <MantineProvider theme={theme}>
         <Notifications />
             <BrowserRouter>
-                <AuthContext.Provider value={{token, setToken,nev, setReszleg, reszleg, setNev, role, setRole,ugyintezoiJogosultsagok, setUgyintezoiJogosultsagok}}>
+                <AuthContext.Provider value={{token, setToken,nev, setReszleg, reszleg, setNev, role, setRole,ugyintezoiJogosultsagok, setUgyintezoiJogosultsagok, email, setEmail}}>
                     <Routing/>
                 </AuthContext.Provider>
             </BrowserRouter>
