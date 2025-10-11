@@ -1,6 +1,7 @@
 import api from "../api/api.ts";
 import {jwtDecode} from "jwt-decode";
 import {
+    EmailKeyName, EmailTokenKey,
     NevKeyName,
     NevTokenKey,
     ReszlegKeyName,
@@ -13,7 +14,7 @@ import {AuthContext} from "../context/AuthContext.tsx";
 
 
 const useAuth = () => {
-    const {token, setToken, nev, setNev, role, setRole, ugyintezoiJogosultsagok, setUgyintezoiJogosultsagok, reszleg, setReszleg} = useContext(AuthContext)
+    const {token, setToken, nev, setNev, role, setRole, ugyintezoiJogosultsagok, setUgyintezoiJogosultsagok, reszleg, setReszleg, email, setEmail} = useContext(AuthContext)
 
     const isLoggedIn = !!token;
 
@@ -29,6 +30,7 @@ const useAuth = () => {
 
                 const decoded: any = jwtDecode(token);
                 const nev = decoded[NevTokenKey];
+                const email = decoded[EmailTokenKey];
                 const szerep = decoded[RoleTokenKey];
                 const reszleg = decoded[ReszlegTokenKey];
 
@@ -40,6 +42,9 @@ const useAuth = () => {
 
                 setReszleg(reszleg);
                 localStorage.setItem(ReszlegKeyName, reszleg);
+
+                setEmail(email);
+                localStorage.setItem(EmailKeyName, email);
 
                 setRole(szerep);
                 localStorage.setItem(RoleKeyName, szerep);
@@ -58,7 +63,7 @@ const useAuth = () => {
         setToken(null);
     }
 
-    return{login, logout, isLoggedIn, token, nev, role, reszleg ,ugyintezoiJogosultsagok}
+    return{login, logout, isLoggedIn, token, nev, role, reszleg ,ugyintezoiJogosultsagok, email}
 }
 
 export default useAuth;

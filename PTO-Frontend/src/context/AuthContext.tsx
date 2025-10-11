@@ -2,6 +2,7 @@ import {createContext} from "react";
 import type AuthContextType from "../Interfaces/AuthContext.ts";
 import type UgyintezoiJogosultsag from "../Interfaces/UgyintezoiJogosultsag.ts";
 import {
+    EmailKeyName,
     NevKeyName,
     ReszlegKeyName,
     RoleKeyName,
@@ -14,6 +15,8 @@ export const AuthContext = createContext<AuthContextType>({
     setToken: () => {},
     nev: localStorage.getItem(NevKeyName),
     setNev: () => {},
+    email: localStorage.getItem(EmailKeyName),
+    setEmail: () => {},
     reszleg:localStorage.getItem(ReszlegKeyName),
     setReszleg: () => {},
     role: localStorage.getItem(RoleKeyName),

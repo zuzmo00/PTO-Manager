@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PTO_Manager;
 using PTO_Manager.Additional;
 using PTO_Manager.Context;
 
@@ -23,7 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 });
 
 //Scoped
-builder.Services.AddServices();
+builder.Services.AddServicess();
 //Scoped\\
 //auth
 builder.Services.AddAuthorization(options =>
