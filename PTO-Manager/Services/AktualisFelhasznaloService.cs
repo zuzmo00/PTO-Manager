@@ -4,7 +4,7 @@ namespace SzabadsagKezeloWebApp.Services;
 
 public interface IAktualisFelhasznaloService
 {
-    string Torzs { get; }
+    string UserId { get; }
     string? Nev { get; }
     string? Szerep { get; }
     bool IsAuthenticated { get; }
@@ -19,15 +19,16 @@ public class AktualisFelhasznaloService : IAktualisFelhasznaloService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string Torzs =>
+    public string UserId =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? throw new Exception("Torzs nem található");
+        ?? throw new Exception("userId nem található");
 
     public string? Nev =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
     public string? Szerep =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
 
+    
     public bool IsAuthenticated =>
         _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
 using PTO_Manager.Services;
@@ -43,6 +44,28 @@ namespace PTO_Manager.Controllers
             {
                 var id = await _userService.Register(user);
                 response.Data = id;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+        
+        [HttpGet]
+        [Route("GetRemainingDays")]
+        [Authorize]
+        public async Task<IActionResult> GetRemainingDays()
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var value = await _userService.RemainingDaysGet();
+                response.Data = value;
                 return Ok(response);
             }
             catch (Exception ex)

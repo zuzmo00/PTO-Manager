@@ -40,7 +40,7 @@ const Routing = () => {
             element={<PrivateRoute element={<BasicLayout/>}/>}>
             <Route
                 path=""
-                element={<Navigate to="dashboard" />}
+                element={<Navigate to="Landing" />}
             />
             {
                 routes.filter(route=> route.isPrivate).map(route=> (

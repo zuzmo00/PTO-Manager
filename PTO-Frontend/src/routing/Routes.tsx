@@ -1,5 +1,6 @@
 import Login from "../pages/Login.tsx";
 import Landing from "../pages/Landing.tsx";
+import Request from "../pages/Request.tsx";
 
 export const routes = [
     {
@@ -10,7 +11,12 @@ export const routes = [
     {
         path: "Landing",
         component: < Landing />,
-        isPrivate: false
+        isPrivate: true
+    },
+    {
+        path: "Request",
+        component: < Request />,
+        isPrivate: true
     },
 
 ]

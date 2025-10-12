@@ -13,8 +13,8 @@ namespace PTO_Manager.Entities
         public User Szemely { get; set; }
         
         public DateOnly Ev { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-        public int OsszeesSzab { get; set; }
-        public int EddigKivett { get; set; } = 0;
-        public int Fuggoben { get; set; }=0;
+        public int OsszesSzab { get; set; }
+        public int EddigKivett { get; set; } = 0; // Átírni megmaradtra, vagy valamire,hogy azt reprezentálja mennyi maradt még 
+        public int Fuggoben { get; set; }=0; // Ez pedig igazából felesleges, akár ki is lehet törölni
     }
 }

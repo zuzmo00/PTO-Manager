@@ -16,12 +16,13 @@ const BasicLayout = () => {
             padding="md"
             style={{ background: "#f9f9f9" }}
         >
+
             <AppShell.Navbar style={{ border: "none" }}>
                 {/* linkre kattintva csukjuk be mobilon */}
                 <NavbarMinimal toggle={close} />
             </AppShell.Navbar>
 
-            <AppShell.Main style={{ background: 'url("/bg.png") no-repeat center center fixed' }}>
+            <AppShell.Main style={{ background: 'url("/background.jpg") no-repeat center center fixed' }}>
                 {/* Lebegő Burger: csak mobilon és csak akkor látszik, ha a navbar rejtve van */}
                 {!opened && (
                     <Burger

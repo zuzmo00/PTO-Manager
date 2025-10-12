@@ -1,4 +1,5 @@
 import {
+    IconGitPullRequest,
     IconHome,
     IconLogout,
 } from "@tabler/icons-react";
@@ -60,8 +61,14 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
         {
             icon: IconHome,
             label: "Kezdőlap",
-            url: "dashboard",
-            roles: ["Dolgozo", "Ugyintezo"],
+            url: "Landing",
+            roles: ["User","Administrator"],
+        },
+        {
+            icon: IconGitPullRequest,
+            label: "Kérelem leadása",
+            url: "Request",
+            roles: ["User","Administrator"],
         },
     ];
 
@@ -70,7 +77,6 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
     };
 
     useEffect(() => {
-        // ha pl. /dashboard az útvonal, a "dashboard"-ra illesztjük
         const idx = menuItems.findIndex((c) => location.pathname.endsWith(c.url));
         if (idx >= 0) setActive(idx);
     }, []);
@@ -93,7 +99,7 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
 
     return (
         <nav className={classes.navbar}>
-            <Image src="/binder_cable_assemblies_Logo_black.png" alt="Binder logo" w={120} px={5} mb={20} />
+            <Image  src="/PTO_Manager_ver2.png" alt="logo" w={150} px={5} mb={20} m="auto" />
             <div className={classes.navbarMain}>{links}</div>
             <div className={classes.footer} style={{ width: !isMobile ? "216px" : "90%" }}>
                 <NavbarLink icon={IconLogout} label={"Kijelentkezés"} onClick={onLogout} color="grape" />
