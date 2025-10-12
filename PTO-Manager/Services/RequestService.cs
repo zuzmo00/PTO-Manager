@@ -14,7 +14,7 @@ namespace PTO_Manager.Services
         public Task<Guid> CreateRequest(RequestAddDto requestAddDto);
         public Task<Guid> AcceptRequest(Guid id);
         public Task<Guid> RejectRequest(Guid id);
-        public Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays(Guid id);
+        public Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays();
     }
     public class RequestService : IRequestService
     {
@@ -45,10 +45,10 @@ namespace PTO_Manager.Services
             return newRequest.Id;
         }
 
-        public async Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays(Guid id)
+        public async Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays()
         {
-            var requests = await _dbContext.Requests.Where(x => x.UserId == id).ToListAsync();
-            var specialDays = await _dbContext.SpecialDays.ToListAsync();
+            var requests = await _dbContext.Requests.Where(x => x.UserId.ToString() == _aktualisFelhasznaloService.UserId).ToListAsync(); //évszám kimaradt, hogy melyik évre kell szűrni
+            var specialDays = await _dbContext.SpecialDays.ToListAsync();// Itt is
             if (requests == null)
             {
                 throw new Exception("No requests found for this user");

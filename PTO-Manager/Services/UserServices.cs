@@ -10,6 +10,8 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using SzabadsagKezeloWebApp.Services;
+using RemainingDay = PTO_Manager.Entities.RemainingDay;
 
 namespace PTO_Manager.Services
 {
@@ -19,19 +21,22 @@ namespace PTO_Manager.Services
         Task<string> GenerateToken(User user);
         Task<ClaimsIdentity> GetClaimsIdentity(User user);
         Task<Guid> Register(UserRegisterDto userRegisterDto);
+        Task<RemainingDayGetDto> RemainingDaysGet();
     }
+
     public class UserServices : IUserServices
     {
         private readonly AppDbContext _dbContext;
         private readonly IConfiguration _configuration;
-        private readonly IMapper mapper;
-        public UserServices(AppDbContext dbContext,IMapper mapper, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        private readonly IAktualisFelhasznaloService _aktualisFelhasznaloService;
+
+        public UserServices(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, IAktualisFelhasznaloService aktualisFelhasznaloService)
         {
             _dbContext = dbContext;
             _configuration = configuration;
-            this.mapper = mapper;
-
-
+            _mapper = mapper;
+            _aktualisFelhasznaloService = aktualisFelhasznaloService;
         }
 
         public async Task<string> GenerateToken(User user)
@@ -40,11 +45,12 @@ namespace PTO_Manager.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var exp = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:ExpiresInMinutes"]));
-            var token = new JwtSecurityToken(_configuration["JwtSettings:Issuer"], _configuration["JwtSettings:Audience"], id.Claims, expires: exp, signingCredentials: creds);
+            var token = new JwtSecurityToken(_configuration["JwtSettings:Issuer"],
+                _configuration["JwtSettings:Audience"], id.Claims, expires: exp, signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-
         }
+
         public Task<ClaimsIdentity> GetClaimsIdentity(User user)
         {
             var claims = new List<Claim>
@@ -52,7 +58,7 @@ namespace PTO_Manager.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Nev),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Sid, user.ReszlegId.ToString()), 
+                new Claim(ClaimTypes.Sid, user.ReszlegId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
@@ -67,6 +73,7 @@ namespace PTO_Manager.Services
             {
                 throw new UnauthorizedAccessException("Wrong email or password");
             }
+
             List<AdminPrivilegesDto> adminPrivilegesList = new List<AdminPrivilegesDto>();
             if (user.Role == Roles.Administrator)
             {
@@ -82,6 +89,7 @@ namespace PTO_Manager.Services
                     };
                     adminPrivilegesList.Add(adminPrivilegesDto);
                 }
+
                 LoginReturnDto loginReturnDto = new LoginReturnDto
                 {
                     token = await GenerateToken(user),
@@ -89,6 +97,7 @@ namespace PTO_Manager.Services
                 };
                 return loginReturnDto;
             }
+
             return new LoginReturnDto
             {
                 token = await GenerateToken(user),
@@ -98,21 +107,28 @@ namespace PTO_Manager.Services
 
         public async Task<Guid> Register(UserRegisterDto userRegisterDto)
         {
-            var email = await _dbContext.Users.FirstOrDefaultAsync(x=>x.Email==userRegisterDto.Email);
+            var email = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == userRegisterDto.Email);
             if (email != null)
             {
                 throw new Exception("User already in use");
             }
-            var user = mapper.Map<User>(userRegisterDto);
+
+            var user = _mapper.Map<User>(userRegisterDto);
             user.FennmaradoNapok = new RemainingDay
             {
-                OsszeesSzab = userRegisterDto.FennmaradoNapok,
+                OsszesSzab = userRegisterDto.FennmaradoNapok,
             };
             await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();
             return user.Id;
         }
 
-       
+        public async Task<RemainingDayGetDto> RemainingDaysGet()
+        {
+            var remainingEntity =
+                await _dbContext.Remaining.FirstOrDefaultAsync(c =>
+                    c.SzemelyId.ToString() == _aktualisFelhasznaloService.UserId) ?? throw new Exception("User with the given parameters, not found in the database");
+            return _mapper.Map<RemainingDayGetDto>(remainingEntity);
+        }
     }
 }

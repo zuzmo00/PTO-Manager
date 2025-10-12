@@ -17,7 +17,7 @@ builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("AdrianConnection");
+    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
     //var connectionString = builder.Configuration.GetConnectionString(""); //Adrian
     //var connectionString = builder.Configuration.GetConnectionString(""); //Eszti
     optionsBuilder.UseSqlServer(connectionString);
@@ -29,8 +29,8 @@ builder.Services.AddServicess();
 //auth
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("AllUserPolicy", policy => policy.RequireRole("User" , "Admin"));
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Administrator"));
+    options.AddPolicy("AllUserPolicy", policy => policy.RequireRole("User" , "Administrator"));
 });
 
 

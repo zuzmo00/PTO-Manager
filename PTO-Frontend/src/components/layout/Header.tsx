@@ -12,7 +12,7 @@ const header = ({opened,toggle}: HeaderProps)=> {
             justify="space-between"
             style={{display: "flex", alignItems: "center", height: "100%", paddingLeft: '20px', paddingRight: '20px'}}
         >
-            <Image src="" alt="Binder logo" w={80} px={5}/>
+            <Image src="/PTO_Manager_ver2.png" alt="logo" w={80} px={5}/>
             <Burger
                 opened={opened}
                 onClick={toggle}

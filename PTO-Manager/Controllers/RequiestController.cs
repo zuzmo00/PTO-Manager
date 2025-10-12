@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PTO_Manager.Context;
 using PTO_Manager.DTOs;
@@ -39,14 +40,15 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
-        [HttpPost]
+        [HttpGet]
         [Route("GetAllRequests")]
-        public async Task<IActionResult> GetAllRequests([FromBody] Guid id)
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> GetAllRequests()
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var requests = await _requestService.GetAllRequestsAndSpecialDays(id);
+                var requests = await _requestService.GetAllRequestsAndSpecialDays();
                 response.Data = requests;
                 return Ok(response);
             }

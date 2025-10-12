@@ -2,9 +2,9 @@
 {
     public enum SzabStatusz
     {
-        Fuggoben,
-        Elutasitva,
-        Elfogadva,
-        Eisszavonva
+        Fuggoben = 0,
+        Elutasitva = 1,
+        Elfogadva = 2,
+        Visszavonva = 3
     }
 }
