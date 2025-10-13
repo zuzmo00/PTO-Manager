@@ -24,12 +24,12 @@ namespace PTO_Manager.Controllers
         [HttpPost]
         [Route("CreateRequest")]
 
-        public async Task<IActionResult> CreateRequest([FromBody] RequestAddDto requestAddDto)
+        public async Task<IActionResult> CreateRequest([FromBody] RequestAddAsUserDto requestAddDto)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                await _requestService.CreateRequest(requestAddDto);
+                await _requestService.CreateRequestAsUser(requestAddDto);
                 return Ok(response);
             }
             catch (Exception ex)

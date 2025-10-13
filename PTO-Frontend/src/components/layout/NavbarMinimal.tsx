@@ -1,4 +1,5 @@
 import {
+    IconAlarm,
     IconGitPullRequest,
     IconHome,
     IconLogout,
@@ -69,6 +70,12 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
             label: "Kérelem leadása",
             url: "Request",
             roles: ["User","Administrator"],
+        },
+        {
+            icon: IconAlarm,
+            label: "Kérelemek bírálata",
+            url: "Deciding",
+            roles: ["Administrator"],
         },
     ];
 

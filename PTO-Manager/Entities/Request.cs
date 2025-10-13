@@ -16,13 +16,11 @@ namespace PTO_Manager.Entities
         
         public SzabStatusz Statusz { get; set; }=SzabStatusz.Fuggoben;
         public DateOnly Date { get; set; }
-        public Guid KerelemSzam { get; set; }=Guid.NewGuid();
-        public SzabadsagTipus Tipus { get; set; }
+        public Guid KerelemSzam { get; set; } //Ez autogen volt, de kiszedtem, mert csak problémtá okozna valszeg a tobb napos szaboknal
+        public SzabadsagTipus Tipus { get; set; } //Ezt egyesiteni kellen a DOT-ban hasznalatos Typeokkal mert sokkal kifejezobb az és akkor mar egy helyen van
         
         public Guid? MosdositoSzemelyId { get; set; }
         public DateOnly? ModositasiIdo { get; set; }
-        
-        public string? Megjegyzes { get; set; }=string.Empty;
 
 
     }

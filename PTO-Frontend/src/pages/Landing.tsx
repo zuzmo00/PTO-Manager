@@ -1,5 +1,5 @@
 import {
-    Box,
+    Box, Button,
     Center,
     Container,
     Divider,
@@ -18,6 +18,7 @@ import 'dayjs/locale/hu';
 import type PendingRequests from "../Interfaces/PendingRequests.ts";
 import api from "../api/api.ts"
 import type RemainingDays from "../Interfaces/RemainingDays.ts";
+import { notifications } from "@mantine/notifications";
 
 dayjs.locale('hu');
 
@@ -46,6 +47,11 @@ function Landing(){
         catch(err){
             console.log(err);
             setError("Hiba történt a lekérés során.");
+            notifications.show({
+                title:"Hiba",
+                message:"Hiba az adatok lekérése során.",
+                color:"red"
+            })
         }
         finally {
             setIsLoading(false);
@@ -83,7 +89,7 @@ function Landing(){
                                     w = {15}
                                     h = {15}
                                     style = {{
-                                        backgroundColor: "blue",
+                                        backgroundColor: "orangered",
                                         borderRadius: 4,
                                         border: '1px solid rgba(0, 0, 0, 0.1)',
                                     }}
@@ -95,7 +101,7 @@ function Landing(){
                                 w = {15}
                                 h = {15}
                                 style = {{
-                                    backgroundColor: "purple",
+                                    backgroundColor: "lightcoral",
                                     borderRadius: 4,
                                     border: '1px solid rgba(0,0,0,0.1)',
                                 }}/>
@@ -125,7 +131,7 @@ function Landing(){
                             const daystring = day.format("YYYY-MM-DD");
 
                             let dayitem: ReservedDays | undefined = undefined
-                            const isHetvegeMunkanap: boolean = true; //Majd ide kell egy api
+
 
                             const isFoglalt = foglaltNapok?.some(nap => nap.reservedDay === daystring);
                             if(isFoglalt){
@@ -136,17 +142,13 @@ function Landing(){
                             let color : string | undefined;
 
 
-
-                            if(isHetvegeMunkanap && (day.day() === 6 || day.day() === 0)){
-                                //backgroundColor = "lightgray"
-                                color = "red"
-                            }else if (!isFoglalt) {
+                            if (!isFoglalt) {
                                 //skips this step
                             }else if(dayitem?.reservationType === 5) { //SpecialWorkDay
-                                backgroundColor = "purple"
+                                backgroundColor = "orangered"
                                 color = "white"
                             }else if(dayitem?.reservationType === 6) { //SpecialHoliday
-                                backgroundColor = "blue"
+                                backgroundColor = "lightcoral"
                                 color = "white"
                             }else if(isFoglalt) { //SpecialHoliday
                                 backgroundColor = "forestgreen"
@@ -176,17 +178,17 @@ function Landing(){
                                             <Table.Th>Sorszám</Table.Th>
                                             <Table.Th>kezdet</Table.Th>
                                             <Table.Th>Vég</Table.Th>
-                                            <Table.Th>Megjegyzés</Table.Th>
                                             <Table.Th>Kérés időpontja</Table.Th>
+                                            <Table.Th></Table.Th>
                                         </Table.Tr>
                                     </Table.Thead>
                                     <Table.Tbody>
                                         <Table.Tr>
-                                            <Table.Td>sdf</Table.Td>
-                                            <Table.Td>sdf</Table.Td>
-                                            <Table.Td>sdf</Table.Td>
-                                            <Table.Td>sdf</Table.Td>
-
+                                            <Table.Td>A7435D83-24E7-4E29-B555-2680183603FD</Table.Td>
+                                            <Table.Td>2025-10-21</Table.Td>
+                                            <Table.Td>2025-10-23</Table.Td>
+                                            <Table.Td>2025-10-14</Table.Td>
+                                            <Table.Td><Button style={{backgroundColor:"red"}}>Visszavonás</Button></Table.Td>
                                         </Table.Tr>
                                     </Table.Tbody>
                                 </Table>
