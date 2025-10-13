@@ -11,7 +11,7 @@ namespace PTO_Manager.Services
 {
     public interface IRequestService
     {
-        public Task<Guid> CreateRequest(RequestAddDto requestAddDto);
+        Task<string> CreateRequestAsUser(RequestAddAsUserDto requestAddDto);
         public Task<Guid> AcceptRequest(Guid id);
         public Task<Guid> RejectRequest(Guid id);
         public Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays();
@@ -32,17 +32,39 @@ namespace PTO_Manager.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Guid> CreateRequest(RequestAddDto requestAddDto)
+        public async Task<string> CreateRequestAsUser(RequestAddAsUserDto requestAddDto) //Még a nap nincsen csökkentve, az elérhető napopok, pedig még nincs növelve
         {
-            var request = await _dbContext.Requests.FirstOrDefaultAsync(x => x.Date == requestAddDto.Date);
-            if (request != null)
+            
+            var existingRequest = await _dbContext.Requests
+                .AnyAsync(x => x.Date >= requestAddDto.Begin_Date
+                               && x.Date <= requestAddDto.End_Date
+                               && _aktualisFelhasznaloService.UserId == x.UserId.ToString());
+            if (existingRequest == true)
             {
                 throw new Exception("Request already exists for this date");
             }
-            var newRequest = _mapper.Map<Request>(requestAddDto);
-            await _dbContext.Requests.AddAsync(newRequest);
+
+            List<Request> requests = [];
+            Guid requestId = Guid.NewGuid();
+
+            for (var i = requestAddDto.Begin_Date; i < requestAddDto.End_Date; i = i.AddDays(1))
+            {
+                requests.Add(new Request
+                {
+                    UserId = Guid.Parse(_aktualisFelhasznaloService.UserId),
+                    Statusz = SzabStatusz.Fuggoben,
+                    Date = i,
+                    KerelemSzam = requestId,
+                    Tipus = SzabadsagTipus.Fizetett,
+                });
+            }
+            
+            //SMTP leater need to be added
+            
+            
+            await _dbContext.Requests.AddRangeAsync(requests);
             await _dbContext.SaveChangesAsync();
-            return newRequest.Id;
+            return "Successfully created request";
         }
 
         public async Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays()

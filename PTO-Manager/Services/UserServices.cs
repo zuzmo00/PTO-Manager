@@ -44,7 +44,8 @@ namespace PTO_Manager.Services
             var id = await GetClaimsIdentity(user);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var exp = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:ExpiresInMinutes"]));
+            //var exp = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtSettings:ExpiresInMinutes"]));
+            var exp = DateTime.Now.AddDays(30);
             var token = new JwtSecurityToken(_configuration["JwtSettings:Issuer"],
                 _configuration["JwtSettings:Audience"], id.Claims, expires: exp, signingCredentials: creds);
 

@@ -1,4 +1,4 @@
-﻿import {Box, Button, Center, Container, Group, LoadingOverlay, Paper, Text, Title} from "@mantine/core";
+﻿import {Box, Button, Center, Container, Group, LoadingOverlay, Modal, Paper, Text, Title} from "@mantine/core";
 import { DatePickerInput  } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -7,6 +7,7 @@ import {useEffect, useState} from "react";
 import api from "../api/api.ts";
 import type ReservedDays from "../Interfaces/ReservedDays.ts";
 import type RemainingDays from "../Interfaces/RemainingDays.ts";
+import {notifications} from "@mantine/notifications";
 
 function Request () {
 
@@ -16,7 +17,7 @@ function Request () {
     const [error, setError] = useState<string|null>(null);
     const [value, setValue] = useState<[string | null, string | null]>([null, null]);
     const today = dayjs().add(1,"day").startOf("day").toDate();
-    const [reservedDays, setReservedDays] = useState<ReservedDays[] | null> (null);
+    const [reservedDays, setReservedDays] = useState<ReservedDays[]> (null);
     const [remainingDays, setremainingDays] = useState<RemainingDays | null> (null);
     const [weekendWorkday, setWeekendWorkday] = useState<boolean>(false);
 
@@ -57,16 +58,38 @@ function Request () {
 
         let isWeekend:boolean = false
 
-        const excludedDate = reservedDays?.some(c=> c.reservedDay === formated_day);
+        const excludedDate = reservedDays.some(c=> c.reservedDay === formated_day);
         if(!weekendWorkday){
             isWeekend = temp_day.day() === 6 || temp_day.day() === 0;
         }
 
-
+        return isWeekend || excludedDate;
     };
 
     const handleSubmit = () => {
         open();
+    }
+
+    const handleConfirm = () =>{
+        if(!value[0] || !value[1]){
+            notifications.show({
+                title: "Kérelem leadás",
+                message: "Hiba a kérelem leadása közben!",
+                color: "red"
+            })
+        }
+        setIsLoading(true)
+        try{
+            //await
+        }
+        catch (error){
+            console.log(error);
+            notifications.show({
+                title: "Hiba",
+                message: "Hiba a kérelem rögzítése közben!",
+                color: "red"
+            })
+        }
     }
 
     return(
@@ -83,21 +106,10 @@ function Request () {
                       <Text>Függőben lévő szabadságok száma:  {remainingDays?.fuggoben}</Text>
                   </Box>
               </Center>
-              <Center mt={20}>
-                  <Group gap="xs">
-                      <Group>
-                          <Box
-                          h={15}
-                          w={15}
-                          style={{backgroundColor: "red"}}/>
-                          <Text>Az adott napra már létezik esemény</Text>
-                      </Group>
-                  </Group>
-              </Center>
               <Center>
                   {error && <Text c="red">{error}</Text>}
               </Center>
-              <Center>
+              <Center mt={20}>
                   <Box style = {{textAlign: "center"}}>
                       <DatePickerInput
                           type="range"
@@ -109,10 +121,6 @@ function Request () {
                           onChange={setValue}
                           excludeDate={IsExcludedDate}
                           locale="hu"
-                          renderDay ={date => {
-
-                          }}
-
                       />
                       <Box mt={20} style = {{textAlign: "center"}}>
                           <Button disabled={!isValidRange} onClick={handleSubmit} >
@@ -121,8 +129,24 @@ function Request () {
                       </Box>
                   </Box>
               </Center>
-
           </Paper>
+
+          <Modal opened={modalOpened} onClose={close} centered title="Megerősítés" style={{textAlign: "center"}} >
+              <Center>
+                  <Box style={{textAlign:"center"}}>
+                      <Text fw={"bold"}>Biztos, hogy le szeretné adni a kérelmet az alábbi időszakra?</Text>
+                      <Text mt={10}>{value[0]}-tól   {value[1]}-ig</Text>
+                      <Box>
+                          <Group justify={"center"} mt={10}>
+                              <Button style={{backgroundColor:"red"}}>Mégse</Button>
+                              <Button onClick={handleConfirm}>Leadás</Button>
+                          </Group>
+                      </Box>
+                  </Box>
+              </Center>
+          </Modal>
+
+
       </Container>
     );
 }

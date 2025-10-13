@@ -2,8 +2,8 @@
 
 public enum SzabadsagTipus
 {
-    Fizetett = 0,
-    FizetesNelkuli = 1,
+    Fizetett = 1,
+    FizetesNelkuli = 2,
     Betegseg,
     Betervezett
 }
