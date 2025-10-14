@@ -21,7 +21,7 @@ public class AktualisFelhasznaloService : IAktualisFelhasznaloService
 
     public string UserId =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? throw new Exception("userId nem található");
+        ?? throw new Exception("userId not found");
 
     public string? Nev =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);

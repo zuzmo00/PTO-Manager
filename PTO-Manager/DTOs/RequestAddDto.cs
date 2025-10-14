@@ -1,4 +1,5 @@
-﻿using PTO_Manager.Entities.Enums;
+﻿using PTO_Manager.DTOs.Enums;
+using PTO_Manager.Entities.Enums;
 using PTO_Manager.Entities;
 
 namespace PTO_Manager.DTOs
@@ -7,6 +8,6 @@ namespace PTO_Manager.DTOs
     {
         public Guid UserId { get; set; }
         public DateOnly Date { get; set; }
-        public SzabadsagTipus Tipus { get; set; }
+        public ReservationType Type { get; set; }
     }
 }

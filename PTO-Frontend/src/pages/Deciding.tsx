@@ -17,7 +17,7 @@ import { notifications } from "@mantine/notifications";
 
 function Deciding () {
     const [isLoading,setIsLoading] = useState(false)
-    const [modaloOpen, {open, close}] = useDisclosure(false)
+    const [modelOpen, {open, close}] = useDisclosure(false)
     const [pendingData, setPendingData] = useState<PendingRequestForAdmins[] | []> ([])
     const [dropdownValue, setDropdownValue] = useState<string[]|undefined> (undefined)
 
@@ -159,7 +159,7 @@ function Deciding () {
                 </Center>
             </Paper>
 
-            <Modal opened={modaloOpen} onClose={close} centered title={"Kérelem Bírálat"} ta={"center"}>
+            <Modal opened={modelOpen} onClose={close} centered title={"Kérelem Bírálat"} ta={"center"}>
                 <Center>
                     <Box>
                         <Text fw={"bold"}>A kérelmező szabadság adatai:</Text>

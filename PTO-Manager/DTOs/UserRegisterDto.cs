@@ -8,22 +8,22 @@ namespace PTO_Manager.DTOs
     public class UserRegisterDto
     {
         public string Email { get; set; }
-        public string Nev { get; set; }
-        public int Torzsszam { get; set; }
-        public int ReszlegId { get; set; }
-        public string Jelszo { get; set; }
-        public int FennmaradoNapok { get; set; }
+        public string Name { get; set; }
+        public int Employeeid { get; set; }
+        public int DepartmentId { get; set; }
+        public string Password { get; set; }
+        public int AllHoliday { get; set; }
     }
+    
     public class AdminCreateDto
     {
-        [ForeignKey("Szemely")]
-        public Guid SzemelyId { get; set; }
 
-        [ForeignKey("Reszleg")]
-        public int ReszlegId { get; set; }
+        public Guid UserId { get; set; }
+        
+        public int DepartmentId { get; set; }
 
-        public bool Kerhet { get; set; }
-        public bool Biralhat { get; set; }
-        public bool Visszavonhat { get; set; }
+        public bool CanRequest { get; set; }
+        public bool CanDecide { get; set; }
+        public bool CanRevoke { get; set; }
     }
 }

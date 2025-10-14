@@ -8,13 +8,12 @@ namespace PTO_Manager.Entities
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         
-        [ForeignKey("Szemely")]
-        public Guid SzemelyId { get; set; }
-        public User Szemely { get; set; }
+        [ForeignKey("User")]
+        public Guid UserId { get; set; }
+        public User User { get; set; }
         
-        public DateOnly Ev { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-        public int OsszesSzab { get; set; }
-        public int EddigKivett { get; set; } = 0; // Átírni megmaradtra, vagy valamire,hogy azt reprezentálja mennyi maradt még 
-        public int Fuggoben { get; set; }=0; // Ez pedig igazából felesleges, akár ki is lehet törölni
+        public DateOnly Year { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public int AllHoliday { get; set; }
+        public int RemainingDays { get; set; } = 0; // Átírni megmaradtra, vagy valamire,hogy azt reprezentálja mennyi maradt még 
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PTO_Manager.Entities
 {
-    public class Preferenciak
+    public class Preferences
     {
         [Required,Key]
         public Guid Id { get; set; }=Guid.NewGuid();

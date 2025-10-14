@@ -9,4 +9,4 @@ public enum ReservationType
     PlannedLeave = 4,
     SpecialWorkDay = 5,
     SpecialHoliday = 6
-}
+} 

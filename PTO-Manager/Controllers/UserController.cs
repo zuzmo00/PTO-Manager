@@ -76,5 +76,26 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        [HttpGet]
+        [Route("GetRemainingDaysByUserid")]
+        [Authorize]
+        public async Task<IActionResult> GetRemainingDaysByUserid(GetRemainingForUserDto remainingDaysForUserDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var value = await _userService.RemainingDaysGetByUserid(remainingDaysForUserDto);
+                response.Data = value;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
     }
 }

@@ -6,8 +6,8 @@ namespace PTO_Manager.Entities
     {
         [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public DateOnly Datum { get; set; }
-        public required string Leiras { get; set; }
+        public DateOnly Date { get; set; }
+        public required string Descirption { get; set; }
         
 
     }

@@ -13,7 +13,10 @@ public class AppDbContext :DbContext
     public DbSet<Admin> Administrators { get; set; }
     public DbSet<SpecialDays> SpecialDays { get; set; }
     public DbSet<Log> Log { get; set; }
-    public DbSet<Preferenciak> Preferenciak { get; set; }
+    public DbSet<Preferences> Preferences { get; set; }
+    public DbSet<RequestBlocks> RequestBlocks { get; set; }
+    
+    
 
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -30,9 +33,9 @@ public class AppDbContext :DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         */
        modelBuilder.Entity<Admin>()
-            .HasOne(u => u.Szemely)
-            .WithMany(s => s.Ugyintezo)
-            .HasForeignKey(u => u.SzemelyId)
+            .HasOne(u => u.User)
+            .WithMany(s => s.AdminRoles)
+            .HasForeignKey(u => u.UserId)
             .OnDelete(DeleteBehavior.NoAction);
 
     }

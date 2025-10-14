@@ -38,24 +38,28 @@ namespace PTO_Manager.Services
             var existingRequest = await _dbContext.Requests
                 .AnyAsync(x => x.Date >= requestAddDto.Begin_Date
                                && x.Date <= requestAddDto.End_Date
-                               && _aktualisFelhasznaloService.UserId == x.UserId.ToString());
+                               && _aktualisFelhasznaloService.UserId == x.RequestBlock.UserId.ToString());
             if (existingRequest == true)
             {
                 throw new Exception("Request already exists for this date");
             }
+            
+            var RequestBlockNewItem = new RequestBlocks
+            {
+                UserId = new Guid(_aktualisFelhasznaloService.UserId),
+                StartDate = requestAddDto.Begin_Date,
+                EndDate = requestAddDto.End_Date,
+                Type = ReservationType.PTO,
+            };
 
             List<Request> requests = [];
-            Guid requestId = Guid.NewGuid();
-
             for (var i = requestAddDto.Begin_Date; i < requestAddDto.End_Date; i = i.AddDays(1))
             {
                 requests.Add(new Request
                 {
-                    UserId = Guid.Parse(_aktualisFelhasznaloService.UserId),
-                    Statusz = SzabStatusz.Fuggoben,
+                    RequestBlockId = RequestBlockNewItem.Id,
                     Date = i,
-                    KerelemSzam = requestId,
-                    Tipus = SzabadsagTipus.Fizetett,
+                    Type = ReservationType.PTO,
                 });
             }
             
@@ -63,45 +67,94 @@ namespace PTO_Manager.Services
             
             
             await _dbContext.Requests.AddRangeAsync(requests);
+            await _dbContext.RequestBlocks.AddAsync(RequestBlockNewItem);
             await _dbContext.SaveChangesAsync();
             return "Successfully created request";
         }
 
+        public async Task<List<PendingRequestsGetDto>> GetPendingRequestByDepartment(PendingRequestsInputDto pendingRequestsInputDto)
+        {
+            var pendingRequestBlocks = await _dbContext.RequestBlocks
+                .Include(l=>l.Requests)
+                .Include(k => k.User)
+                .ThenInclude(l=>l.Department)
+                .Where(c => pendingRequestsInputDto.DepartmentIds.Contains(c.User.Department.DepartmentName))
+                .ToListAsync();
+
+
+            var temp = pendingRequestBlocks.Select(c => new PendingRequestsGetDto
+            {
+                id = c.Id.ToString(),
+                name = c.User.Name,
+                department = c.User.Department.DepartmentName,
+                begin = c.StartDate,
+                end = c.EndDate,
+            }
+            ).ToList();
+
+            return temp;
+
+            /*
+             Más logika, másik functionba kell
+
+            var temp = pendingRequestBlocks.SelectMany(v => v.Requests).Select(c => new PendingRequestsGetDto
+            {
+             id = c.Id.ToString(),
+             name = c.RequestBlock.User.Name,
+             department = c.RequestBlock.User.Department.DepartmentNev,
+             date = c.Date,
+            });
+             */
+        }
+        
+        
         public async Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays()
         {
-            var requests = await _dbContext.Requests.Where(x => x.UserId.ToString() == _aktualisFelhasznaloService.UserId).ToListAsync(); //évszám kimaradt, hogy melyik évre kell szűrni
+            var requestsBlocks = await _dbContext.RequestBlocks
+                .Include(k => k.Requests)
+                .Where(x => x.UserId.ToString() == _aktualisFelhasznaloService.UserId).ToListAsync() ?? []; //évszám kimaradt, hogy melyik évre kell szűrni
             var specialDays = await _dbContext.SpecialDays.ToListAsync();// Itt is
-            if (requests == null)
-            {
-                throw new Exception("No requests found for this user");
+            List<ReservedDaysDto> dtos = [];
+       
+            if (requestsBlocks.Count != 0) {
+                    var temp =  requestsBlocks.SelectMany(c => c.Requests)
+                    .Select(k => new ReservedDaysDto
+                    {
+                        reservedDay = k.Date,
+                        reservationType = ReservationType.PTO
+                    }).ToList();
+                    dtos.AddRange(temp);
             }
-            List<ReservedDaysDto> dtos = new List<ReservedDaysDto>();
-            foreach (var request in requests)
+            
+            var specDays = specialDays.Select(c => new ReservedDaysDto
             {
-                ReservedDaysDto dto = new ReservedDaysDto
-                {
-                    reservedDay = request.Date,
-                    reservationType = (ReservationType)(int)request.Tipus
-                };
-                dtos.Add(dto);
-            }
-            foreach (var specialDay in specialDays)
-            {
-                ReservedDaysDto dto = new ReservedDaysDto
-                {
-                    reservedDay = specialDay.Date,
-                    reservationType = specialDay.IsWorkingDay
-                        ? ReservationType.SpecialWorkDay
-                        : ReservationType.SpecialHoliday
-                };
-                dtos.Add(dto);
-            }
+                reservedDay = c.Date,
+                reservationType = c.IsWorkingDay ? ReservationType.SpecialWorkDay : ReservationType.SpecialHoliday
+            });
+            dtos.AddRange(specDays);
+           
             return dtos;
         }
     
-        public Task<Guid> RejectRequest(Guid id)
+        public async Task<string> RejectRequest(RequestDecisionInputDto requestDecisionInputDto)
         {
-            throw new NotImplementedException();
+            var requestBlock = await _dbContext.RequestBlocks
+                .Include(k => k.Requests)
+                .FirstOrDefaultAsync(x => x.Id.ToString() == requestDecisionInputDto.RequestBlockId) ?? throw new Exception("RequestBlock not found");
+
+            requestBlock.Status = requestDecisionInputDto.verdict switch
+            {
+                true => HolidayStatus.Accepted,
+                false => HolidayStatus.Pending
+            };
+            
+            _dbContext.RequestBlocks.Update(requestBlock);
+            await _dbContext.SaveChangesAsync();
+            return requestDecisionInputDto.verdict switch
+            {
+                true => "Request accepted succesfully",
+                false => "Request declined succesfully"
+            };
         }
     }
 }

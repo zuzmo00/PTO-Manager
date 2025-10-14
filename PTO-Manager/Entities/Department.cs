@@ -6,8 +6,8 @@ public class Department
 {
     [Required,Key]
     public int Id { get; set; }
-    public string ReszlegNev { get; set; }
+    public string DepartmentName { get; set; }
     
-    List<User>? Szemelyek { get; set; }
-    List<Admin>? Ugyintezok { get; set; }
+    List<User>? Users { get; set; }
+    List<Admin>? Admins { get; set; }
 }
