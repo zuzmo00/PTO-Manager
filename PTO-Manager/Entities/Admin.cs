@@ -8,16 +8,16 @@ namespace PTO_Manager.Entities
         [Required,Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         
-        [ForeignKey("Szemely")]
-        public Guid SzemelyId { get; set; }
-        public User Szemely { get; set; }
+        [ForeignKey("User")]
+        public Guid UserId { get; set; }
+        public User User { get; set; }
         
-        [ForeignKey("Reszleg")]
-        public int ReszlegId { get; set; }
-        public Department Reszleg { get; set; }
+        [ForeignKey("Department")]
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; }
         
-       public bool Kerhet { get; set; }
-       public bool Biralhat { get; set; }
-       public bool Visszavonhat { get; set; }
+       public bool CanRequest { get; set; }
+       public bool CanDecide { get; set; }
+       public bool CanRevoke { get; set; }
     }
 }

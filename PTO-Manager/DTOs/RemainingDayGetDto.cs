@@ -2,7 +2,8 @@
 
 public class RemainingDayGetDto
 {
-    public int OsszesSzab { get; set; }
-    public int EddigKivett { get; set; } 
-    public int Fuggoben { get; set; }
+    public int AllHoliday { get; set; }
+    public int RemainingDays { get; set; } = 0;
+    public int TimeProportional { get; set; } // It has to be calculated seperatly, Cannot be mapped
+    
 }

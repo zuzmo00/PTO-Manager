@@ -11,7 +11,7 @@ const Auth = {
 }
 const Request = {
     getReservedDays: () =>
-        axiosInstance.get<ApiResponse<ReservedDays[]>>("/api/Requiest/GetAllRequests"),
+        axiosInstance.get<ApiResponse<ReservedDays[]>>("/api/Request/GetAllRequests"),
     getRemainingDays: () =>
         axiosInstance.get<ApiResponse<RemainingDays>>("/api/User/GetRemainingDays"),
 

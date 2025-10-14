@@ -10,12 +10,12 @@ namespace PTO_Manager.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RequiestController: ControllerBase
+    public class RequestController: ControllerBase
     {
         private readonly IRequestService _requestService;
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
-        public RequiestController(IRequestService requestService, AppDbContext appDbContext, IMapper mapper)
+        public RequestController(IRequestService requestService, AppDbContext appDbContext, IMapper mapper)
         {
             _requestService = requestService;
             _appDbContext = appDbContext;

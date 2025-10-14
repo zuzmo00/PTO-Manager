@@ -22,6 +22,7 @@ namespace PTO_Manager.Services
         Task<ClaimsIdentity> GetClaimsIdentity(User user);
         Task<Guid> Register(UserRegisterDto userRegisterDto);
         Task<RemainingDayGetDto> RemainingDaysGet();
+        Task<RemainingDayGetDto> RemainingDaysGetByUserid(GetRemainingForUserDto userDto);
     }
 
     public class UserServices : IUserServices
@@ -57,9 +58,9 @@ namespace PTO_Manager.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Nev),
+                new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Sid, user.ReszlegId.ToString()),
+                new Claim(ClaimTypes.Sid, user.DepartmentId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
@@ -70,7 +71,7 @@ namespace PTO_Manager.Services
         public async Task<LoginReturnDto> Login(LoginInputDto userLoginDto)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == userLoginDto.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Jelszo, user.Jelszo))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.password, user.Password))
             {
                 throw new UnauthorizedAccessException("Wrong email or password");
             }
@@ -78,15 +79,15 @@ namespace PTO_Manager.Services
             List<AdminPrivilegesDto> adminPrivilegesList = new List<AdminPrivilegesDto>();
             if (user.Role == Roles.Administrator)
             {
-                var admin = await _dbContext.Administrators.Where(x => x.SzemelyId == user.Id).ToListAsync();
+                var admin = await _dbContext.Administrators.Where(x => x.UserId == user.Id).ToListAsync();
                 foreach (var item in admin)
                 {
                     AdminPrivilegesDto adminPrivilegesDto = new AdminPrivilegesDto
                     {
-                        kerhet = item.Kerhet,
-                        visszavonhat = item.Visszavonhat,
-                        biralhat = item.Biralhat,
-                        reszlegId = item.ReszlegId,
+                        CanRequest = item.CanRequest,
+                        CanRevoke = item.CanRevoke,
+                        CanDecide = item.CanDecide,
+                        DepartmentId = item.DepartmentId,
                     };
                     adminPrivilegesList.Add(adminPrivilegesDto);
                 }
@@ -115,9 +116,9 @@ namespace PTO_Manager.Services
             }
 
             var user = _mapper.Map<User>(userRegisterDto);
-            user.FennmaradoNapok = new RemainingDay
+            user.RemainingDay = new RemainingDay
             {
-                OsszesSzab = userRegisterDto.FennmaradoNapok,
+                AllHoliday = userRegisterDto.AllHoliday,
             };
             await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();
@@ -128,8 +129,20 @@ namespace PTO_Manager.Services
         {
             var remainingEntity =
                 await _dbContext.Remaining.FirstOrDefaultAsync(c =>
-                    c.SzemelyId.ToString() == _aktualisFelhasznaloService.UserId) ?? throw new Exception("User with the given parameters, not found in the database");
-            return _mapper.Map<RemainingDayGetDto>(remainingEntity);
+                    c.UserId.ToString() == _aktualisFelhasznaloService.UserId) ?? throw new Exception("User with the given parameters, not found in the database");
+            var temp = _mapper.Map<RemainingDayGetDto>(remainingEntity);
+            temp.TimeProportional = (int)Math.Round(((double)temp.AllHoliday /365) * DateTime.Now.DayOfYear);
+            return temp;
+        }
+        
+        public async Task<RemainingDayGetDto> RemainingDaysGetByUserid(GetRemainingForUserDto userDto)
+        {
+            var remainingEntity =
+                await _dbContext.Remaining.FirstOrDefaultAsync(c =>
+                    c.UserId.ToString() == userDto.UserId) ?? throw new Exception("User with the given parameters, not found in the database");
+            var temp = _mapper.Map<RemainingDayGetDto>(remainingEntity);
+            temp.TimeProportional = (int)Math.Round(((double)temp.AllHoliday /365) * DateTime.Now.DayOfYear);
+            return temp;
         }
     }
 }

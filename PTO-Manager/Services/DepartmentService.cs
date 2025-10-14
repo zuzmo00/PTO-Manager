@@ -24,7 +24,7 @@ namespace PTO_Manager.Services
         {
             var newDepartment = new Department
             {
-                ReszlegNev = departmentName.ReszlegNev
+                DepartmentName = departmentName.DepartmentName
             };
             await _context.Department.AddAsync(newDepartment);
             await _context.SaveChangesAsync();
@@ -32,12 +32,12 @@ namespace PTO_Manager.Services
         }
         public async Task<int> RemoveDepartment(int id)
         {
-            var department = _context.Department.FindAsync(id);
+            var department = await _context.Department.FindAsync(id);
             if (department == null)
             {
                 throw new Exception("Department not found");
             }
-            _context.Department.Remove(department.Result);
+            _context.Department.Remove(department);
             await _context.SaveChangesAsync();
             return id;
         }

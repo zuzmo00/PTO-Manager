@@ -2,6 +2,6 @@
 {
     public class CreateDepartmentDto
     {
-        public string ReszlegNev { get; set; }
+        public string DepartmentName { get; set; }
     }
 }

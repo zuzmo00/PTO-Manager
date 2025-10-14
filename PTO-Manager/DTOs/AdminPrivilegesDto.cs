@@ -2,8 +2,11 @@
 
 public class AdminPrivilegesDto
 {
-    public int reszlegId { get; set; }
-    public bool kerhet { get; set; }
-    public bool biralhat { get; set; }
-    public bool visszavonhat { get; set; }
+    public int DepartmentId { get; set; }
+    
+    public bool CanRequest { get; set; }
+    
+    public bool CanDecide { get; set; }
+    
+    public bool CanRevoke { get; set; }
 }

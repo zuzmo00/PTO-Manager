@@ -19,8 +19,8 @@ public class AutoMapperProfile: Profile
 
         CreateMap<User, Request>().ReverseMap();
         CreateMap<User, UserRegisterDto>().ReverseMap()
-            .ForMember(dest => dest.FennmaradoNapok, opt => opt.Ignore())
-            .ForMember(dest => dest.Jelszo, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Jelszo)));
+            .ForMember(dest => dest.RemainingDay, opt => opt.Ignore())
+            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Password)));
 
         CreateMap<SpecialDays, SpecialDaysAddDto>().ReverseMap();
         CreateMap<SpecialDays, SpecialDaysGetDto>().ReverseMap();
