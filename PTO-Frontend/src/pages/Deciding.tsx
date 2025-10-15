@@ -148,7 +148,7 @@ function Deciding () {
                                         <Table.Td>{k.department}</Table.Td>
                                         <Table.Td>{k.begin}</Table.Td>
                                         <Table.Td>{k.end}</Table.Td>
-                                        <Table.Td>{k.requestId}</Table.Td>
+                                        <Table.Td>{k.id}</Table.Td>
                                         <Table.Td><Button style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(); setCurrentRequest(k.id)}}>Bírálat</Button></Table.Td>
                                     </Table.Tr>
                                 ))}
@@ -164,14 +164,14 @@ function Deciding () {
                         <Text fw={"bold"}>A kérelmező szabadság adatai:</Text>
                         <Box>
                             <Text mt={10}>Összes kivehető szabasága: 30</Text>
-                            <Text>Eddig kivett szabadságnapok száma: 10</Text>
-                            <Text>Időarányosan kivehető napok száma: 14</Text>
+                            <Text>Meglévő szabadságok száma: 23</Text>
+                            <Text>Időarányosan kivehető napok száma: 24</Text>
                         </Box>
                         <Divider mt={10} mb={10}/>
                         <Text>Kérvényezett időszak:</Text>
                         <Group justify={"center"}>
-                            <Text>2025-10-21-től </Text>
-                            <Text>2025-10-23-ig</Text>
+                            <Text>2025-10-27-től </Text>
+                            <Text>2025-10-29-ig</Text>
                         </Group>
                         <Text>Az időszak ennyi munkanapot érint: 3</Text>
                         <Group justify={"center"} mt={10}>

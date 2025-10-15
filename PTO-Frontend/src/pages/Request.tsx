@@ -110,7 +110,7 @@ function Request () {
               <Center>
                   <Title style={{fontSize:20}}>Kérem válassza ki az időszakot amelyre szabadságot szeretne kérni!</Title>
               </Center>
-              <Center mt={10}>
+              <Center mt={10} ta={"center"}>
                   <Box>
                       <Text>Évi összes szabadságnapok száma: {remainingDays?.allHoliday}</Text>
                       <Text>Fennmaradó szabadságok száma: {remainingDays?.remainingDays}</Text>
