@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PTO_Manager.Context;
@@ -8,6 +9,7 @@ using PTO_Manager.Services;
 
 namespace PTO_Manager.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SpecialDaysController:ControllerBase
@@ -48,7 +50,7 @@ namespace PTO_Manager.Controllers
             ApiResponse response = new ApiResponse();
             try
             {
-                await _specialDaysService.RemovelSpecialDay(date);
+                await _specialDaysService.RemovalSpecialDay(date);
                 return Ok(response);
             }
             catch (Exception ex)

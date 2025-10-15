@@ -8,6 +8,8 @@ import api from "../api/api.ts";
 import type ReservedDays from "../Interfaces/ReservedDays.ts";
 import type RemainingDays from "../Interfaces/RemainingDays.ts";
 import {notifications} from "@mantine/notifications";
+import type RequestAddAsUserDto from "../Interfaces/RequestAddAsUserDto.ts";
+import {useNavigate} from "react-router-dom";
 
 function Request () {
 
@@ -17,7 +19,7 @@ function Request () {
     const [error, setError] = useState<string|null>(null);
     const [value, setValue] = useState<[string | null, string | null]>([null, null]);
     const today = dayjs().add(1,"day").startOf("day").toDate();
-    const [reservedDays, setReservedDays] = useState<ReservedDays[]> (null);
+    const [reservedDays, setReservedDays] = useState<ReservedDays[]> ([]);
     const [remainingDays, setremainingDays] = useState<RemainingDays | null> (null);
     const [weekendWorkday, setWeekendWorkday] = useState<boolean>(false);
 
@@ -70,40 +72,49 @@ function Request () {
         open();
     }
 
-    const handleConfirm = () =>{
+    const navigate = useNavigate();
+    const handleConfirm = async () =>{
         if(!value[0] || !value[1]){
             notifications.show({
                 title: "Kérelem leadás",
                 message: "Hiba a kérelem leadása közben!",
                 color: "red"
             })
+            close();
+        }else{
+            setIsLoading(true)
+            try{
+                const inputrequestdto:RequestAddAsUserDto = {begin_Date: value[0], end_Date: value[1]}
+                await api.Request.postCreateRequest(inputrequestdto);
+                close()
+                navigate('/')
+            }
+            catch (error){
+                console.log(error);
+                notifications.show({
+                    title: "Hiba",
+                    message: "Hiba a kérelem rögzítése közben!",
+                    color: "red"
+                })
+            }finally {
+                setIsLoading(false);
+            }
         }
-        setIsLoading(true)
-        try{
-            //await
-        }
-        catch (error){
-            console.log(error);
-            notifications.show({
-                title: "Hiba",
-                message: "Hiba a kérelem rögzítése közben!",
-                color: "red"
-            })
-        }
+
     }
 
     return(
       <Container>
+          <LoadingOverlay visible={isLoading} overlayProps={{ blur: 2 }} />
           <Paper p="xl" radius="md" withBorder pos = "relative">
-              <LoadingOverlay visible={isLoading} overlayProps={{ blur: 2 }} />
               <Center>
                   <Title style={{fontSize:20}}>Kérem válassza ki az időszakot amelyre szabadságot szeretne kérni!</Title>
               </Center>
               <Center mt={10}>
                   <Box>
-                      <Text>Évi összes szabadságnapok száma: {remainingDays?.osszesSzab}</Text>
-                      <Text>Eddig kivett szabadságok száma: {remainingDays?.eddigKivett}</Text>
-                      <Text>Függőben lévő szabadságok száma:  {remainingDays?.fuggoben}</Text>
+                      <Text>Évi összes szabadságnapok száma: {remainingDays?.allHoliday}</Text>
+                      <Text>Fennmaradó szabadságok száma: {remainingDays?.remainingDays}</Text>
+                      <Text>Időarányosan kivehető szabadságok száma:  {remainingDays?.timeProportional}</Text>
                   </Box>
               </Center>
               <Center>
@@ -113,6 +124,7 @@ function Request () {
                   <Box style = {{textAlign: "center"}}>
                       <DatePickerInput
                           type="range"
+                          allowSingleDateInRange
                           label="Időszak kiválasztása"
                           placeholder="Például: Október 20, 2025 - Október 24, 2025"
                           style={{minWidth: 200}}
@@ -138,8 +150,8 @@ function Request () {
                       <Text mt={10}>{value[0]}-tól   {value[1]}-ig</Text>
                       <Box>
                           <Group justify={"center"} mt={10}>
-                              <Button style={{backgroundColor:"red"}}>Mégse</Button>
-                              <Button onClick={handleConfirm}>Leadás</Button>
+                              <Button style={{backgroundColor:"red"}} disabled={isLoading} onClick={close}>Mégse</Button>
+                              <Button onClick={handleConfirm} disabled={isLoading}>Leadás</Button>
                           </Group>
                       </Box>
                   </Box>

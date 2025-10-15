@@ -5,6 +5,7 @@ import {
     Divider,
     Group,
     LoadingOverlay,
+    Modal,
     Paper,
     Table,
     Text,
@@ -19,6 +20,8 @@ import type PendingRequests from "../Interfaces/PendingRequests.ts";
 import api from "../api/api.ts"
 import type RemainingDays from "../Interfaces/RemainingDays.ts";
 import { notifications } from "@mantine/notifications";
+import {useDisclosure} from "@mantine/hooks";
+import type RevokeRequestInputDto from "../Interfaces/RevokeRequestInputDto.ts";
 
 dayjs.locale('hu');
 
@@ -28,6 +31,11 @@ function Landing(){
     const [error, setError] = useState<string | null>(null);
     const [foglaltNapok, setFoglaltNapok] = useState<ReservedDays[] | null>(null);
     const [pendingRequests, setPendingRequests] = useState<PendingRequests[]>([]);
+    const [modelOpen, {open, close}] = useDisclosure(false)
+
+    const [selectedBlock, setSelectedBlock] = useState<string>("");
+    //const [selectedRequest, setSelectedRequest] = useState<string >("");
+
 
     const [szabStat, setSzabStat] = useState<RemainingDays | null>(null);
 
@@ -36,12 +44,14 @@ function Landing(){
         try{
             const FoglaltNapok_Response = await api.Request.getReservedDays()
             const FoglaltNapok_Res_Data = FoglaltNapok_Response.data?.data ?? [];
-            //sessionStorage.setItem("ReservedDays", JSON.stringify(FoglaltNapok_Res_Data)); Attól függ, hogy akarom megoldani, hogy mindig frissek legyenek az adatok
 
             setFoglaltNapok(FoglaltNapok_Res_Data);
 
             const SzabStat_Response = await api.Request.getRemainingDays();
             setSzabStat(SzabStat_Response.data?.data ?? null);
+
+            const PendingRequests_response = await api.Request.getPendingRequest();
+            setPendingRequests(PendingRequests_response.data?.data ?? [])
 
         }
         catch(err){
@@ -58,16 +68,58 @@ function Landing(){
         }
     }
 
+
+    const HandleRevoke = async(requestId:string) => {
+        setIsLoading(true);
+        try{
+            const inputDto: RevokeRequestInputDto = {RequestBlockId: requestId}
+            await api.Request.postRevokeARequest(inputDto)
+            await fetchData();
+            close();
+        }catch (error){
+            console.log(error)
+
+            notifications.show({
+                title:"Hiba",
+                message:"Hiba történt a lekérdezés során",
+                color:"red"
+                }
+            )
+        }finally {
+            setIsLoading(false)
+        }
+    }
+
+    const HandleBlockRevoke = async(requestBlockId:string) => {
+        setIsLoading(true);
+        try{
+            const inputDto: RevokeRequestInputDto = {RequestBlockId: requestBlockId}
+            await api.Request.postRevokeRequestBlock(inputDto)
+            await fetchData();
+            close();
+        }catch (error){
+            console.log(error)
+
+            notifications.show({
+                    title:"Hiba",
+                    message:"Hiba történt a lekérdezés során",
+                    color:"red"
+                }
+            )
+        }finally {
+            setIsLoading(false)
+        }
+    }
+
+
     useEffect(() => {
         fetchData();
-
-        setPendingRequests([]);
     },[])
 
     return (
         <Container>
+            <LoadingOverlay visible={isLoading} overlayProps={{ blur: 2 }} />
             <Paper p="xl" radius="md" withBorder pos = "relative">
-                <LoadingOverlay visible={isLoading} overlayProps={{ blur: 2 }} />
                 <Center>
                     <Box style = {{textAlign: "center"}}>
                         <Title mb={20}>
@@ -77,9 +129,9 @@ function Landing(){
                         {error && <Text c="red">{error}</Text>}
                         {szabStat && (
                             <>
-                                <Text>Összes szabadság: {szabStat.osszesSzab} nap</Text>
-                                <Text>Rendelkezésre álló (Jelenleg függőben lévő): {szabStat.fuggoben} nap</Text>
-                                <Text>Időarányos (jelenleg eddig kivett): {szabStat.eddigKivett}</Text>
+                                <Text>Összes szabadság: {szabStat.allHoliday} nap</Text>
+                                <Text>Rendelkezésre álló : {szabStat.remainingDays} nap</Text>
+                                <Text>Időarányosan kivető szabadságok száma: {szabStat.timeProportional}</Text>
                             </>
                         )}
                         <Title size="lg" mb="md" mt={10} style={{fontSize:25}}>Szabadság naptár</Title>
@@ -166,7 +218,7 @@ function Landing(){
                         />
                     </Box>
                 </Center>
-                {pendingRequests.length >= 0 && (
+                {pendingRequests.length > 0 && (
                     <Box>
                         <Divider mt={10} my="lg" w="70%" m="auto"/>
                         <Center>
@@ -183,13 +235,14 @@ function Landing(){
                                         </Table.Tr>
                                     </Table.Thead>
                                     <Table.Tbody>
-                                        <Table.Tr>
-                                            <Table.Td>A7435D83-24E7-4E29-B555-2680183603FD</Table.Td>
-                                            <Table.Td>2025-10-21</Table.Td>
-                                            <Table.Td>2025-10-23</Table.Td>
-                                            <Table.Td>2025-10-14</Table.Td>
-                                            <Table.Td><Button style={{backgroundColor:"red"}}>Visszavonás</Button></Table.Td>
-                                        </Table.Tr>
+                                        {pendingRequests.map(t => (
+                                            <Table.Tr key={t.pendingRequestBlock.id}>
+                                                <Table.Td>{t.pendingRequestBlock.id}</Table.Td>
+                                                <Table.Td>{t.pendingRequestBlock.begin}</Table.Td>
+                                                <Table.Td>{t.pendingRequestBlock.end}</Table.Td>
+                                                <Table.Td><Button onClick={ () => {setSelectedBlock(t.pendingRequestBlock.id); open();}} style={{backgroundColor:"red"}}>Visszavonás</Button></Table.Td>
+                                            </Table.Tr>
+                                        ))}
                                     </Table.Tbody>
                                 </Table>
                             </Box>
@@ -198,6 +251,40 @@ function Landing(){
 
                 )}
             </Paper>
+            <Modal opened={modelOpen} onClose={close} centered title={"Visszavonás"} ta={"center"}>
+                <Center>
+                    <Box>
+                        <Text mb={10} fw={"bold"}>Mely napot szeretné visszavonni az alábbiak közül?</Text>
+                        <Divider/>
+
+                        <Table>
+                            <Table.Tbody>
+                                {(() => {
+                                    const found = pendingRequests.find(
+                                        (i) => i.pendingRequestBlock.id === selectedBlock
+                                    );
+
+                                    if (!found) {
+                                        return (
+                                            <Table.Tr>
+                                                <Table.Td colSpan={2}>Nincs kiválasztott szabadságblokk.</Table.Td>
+                                            </Table.Tr>
+                                        );
+                                    }
+
+                                    return found.requests.map((req) => (
+                                        <Table.Tr key={req.id}>
+                                            <Table.Td>{req.date}</Table.Td>
+                                            <Table.Td><Button style={{backgroundColor:"red"}} onClick={() => HandleRevoke(req.id)}>Visszavon</Button></Table.Td>
+                                        </Table.Tr>
+                                    ));
+                                })()}
+                            </Table.Tbody>
+                        </Table>
+                        <Button mt={10} style={{backgroundColor: "red"}} onClick={ () => HandleBlockRevoke(selectedBlock)}>Összes visszavonása</Button>
+                    </Box>
+                </Center>
+            </Modal>
         </Container>
     );
 }

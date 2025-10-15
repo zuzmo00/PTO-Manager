@@ -6,6 +6,7 @@ using PTO_Manager.Services;
 
 namespace PTO_Manager.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -16,6 +17,7 @@ namespace PTO_Manager.Controllers
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login([FromBody] LoginInputDto user)
@@ -58,7 +60,6 @@ namespace PTO_Manager.Controllers
         
         [HttpGet]
         [Route("GetRemainingDays")]
-        [Authorize]
         public async Task<IActionResult> GetRemainingDays()
         {
             ApiResponse response = new ApiResponse();
@@ -77,7 +78,7 @@ namespace PTO_Manager.Controllers
             }
         }
         
-        [HttpGet]
+        [HttpPost]
         [Route("GetRemainingDaysByUserid")]
         [Authorize]
         public async Task<IActionResult> GetRemainingDaysByUserid(GetRemainingForUserDto remainingDaysForUserDto)

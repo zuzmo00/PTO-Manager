@@ -14,6 +14,6 @@ namespace PTO_Manager.Entities
         
         public DateOnly Year { get; set; } = DateOnly.FromDateTime(DateTime.Now);
         public int AllHoliday { get; set; }
-        public int RemainingDays { get; set; } = 0; // Átírni megmaradtra, vagy valamire,hogy azt reprezentálja mennyi maradt még 
+        public int RemainingDays { get; set; }  // Átírni megmaradtra, vagy valamire,hogy azt reprezentálja mennyi maradt még 
     }
 }
