@@ -13,6 +13,10 @@ import {useEffect, useState} from "react";
 import {useDisclosure} from "@mantine/hooks";
 import type PendingRequestForAdmins from "../Interfaces/PendingRequestForAdmins.ts";
 import { notifications } from "@mantine/notifications";
+import api from "../api/api.ts";
+import type PendingRequestsInputDto from "../Interfaces/PendingRequestsInputDto.ts";
+import type RequestDecisionInputDto from "../Interfaces/RequestDecisionInputDto.ts";
+
 
 
 function Deciding () {
@@ -20,13 +24,21 @@ function Deciding () {
     const [modelOpen, {open, close}] = useDisclosure(false)
     const [pendingData, setPendingData] = useState<PendingRequestForAdmins[] | []> ([])
     const [dropdownValue, setDropdownValue] = useState<string[]|undefined> (undefined)
+    const [departmments, setDepartmments] = useState<string[]> ([])
 
+    const [currentRequest, setCurrentRequest] = useState<string> ("")
 
 
     const fetchData = async () => {
         setIsLoading(true);
         try{
-            //await api.Request
+            const departmentdata = await api.Department.getDepartments();
+            setDepartmments(departmentdata.data?.data ?? []);
+
+            const inputdata : PendingRequestsInputDto = {departmentIds : departmentdata.data?.data ?? []}
+            const requestsByDepartment_data = await api.Request.postPendingRequestByDepartment(inputdata);
+
+            setPendingData(requestsByDepartment_data.data?.data ?? [])
 
 
         }
@@ -44,56 +56,43 @@ function Deciding () {
     }
 
     useEffect(() => {
-        setPendingData([
-            {
-                id: "elso",
-                name:"nagy andras",
-                department: "IT",
-                begin: "2025-10-21",
-                end: "2025-10-23",
-                requestId: "sdfh34-436534gv-423vgt",
-            },
-            {
-                id: "masodik",
-                name:"kiss mariann",
-                department: "HR",
-                begin: "2025-10-14",
-                end: "2025-10-16",
-                requestId: "sdfh34-dfgdgfdfg-423vgt",
-            },
-            {
-                id: "harmadik",
-                name:"Gaspar tamas",
-                department: "Gyartas",
-                begin: "2025-10-12",
-                end: "2025-10-14",
-                requestId: "sdfgg-436534gv-423vgt",
-            },
-            {
-                id: "negyedik",
-                name:"penz ugy",
-                department: "Karbantartas",
-                begin: "2025-11-09",
-                end: "2025-11-14",
-                requestId: "sdfgg-436534gv-423vgt",
-            },
+        fetchData();
 
-        ]);
     }, []);
 
-    const HandleDeciding = () => {
+    const  HandleDeciding = async (BoolDecide:boolean) => {
+        setIsLoading(true)
+        try{
+            const apiInput :RequestDecisionInputDto = {RequestBlockId: currentRequest, verdict: BoolDecide}
+            await api.Request.postMakeDecision(apiInput);
+        }catch {
+            notifications.show({
+                title:"Hiba",
+                message:"Hiba történt a lekérdezés során",
+                color:"red"
+            })
+        }finally {
+            fetchPendingRequests();
+            close()
+            setIsLoading(false)
 
+        }
     }
 
     const [serachParameters, setSearchParameters] = useState<string[] | undefined> (undefined)
+
+    const fetchPendingRequests = async () =>{
+        const inputdata : PendingRequestsInputDto = {departmentIds : departmments}
+        const requestsByDepartment_data = await api.Request.postPendingRequestByDepartment(inputdata);
+
+        setPendingData(requestsByDepartment_data.data?.data ?? [])
+    }
 
     useEffect(() => {
         setSearchParameters(dropdownValue)
         fetchPendingRequests();
     }, [dropdownValue]);
-    const fetchPendingRequests = () =>{
-        //await lekeres
-    }
+
 
     const OpenDeciding = () => {
         open();
@@ -108,7 +107,7 @@ function Deciding () {
                         <MultiSelect
                             label="Részlegek választása"
                             placeholder={"pl.: IT"}
-                            data = {["IT","HR","Gyartas","Karbantartas"]}
+                            data = {departmments}
                             value={dropdownValue}
                             onChange={setDropdownValue}
                             searchable
@@ -150,7 +149,7 @@ function Deciding () {
                                         <Table.Td>{k.begin}</Table.Td>
                                         <Table.Td>{k.end}</Table.Td>
                                         <Table.Td>{k.requestId}</Table.Td>
-                                        <Table.Td><Button style={{backgroundColor:"red"}} onClick={OpenDeciding}>Bírálat</Button></Table.Td>
+                                        <Table.Td><Button style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(); setCurrentRequest(k.id)}}>Bírálat</Button></Table.Td>
                                     </Table.Tr>
                                 ))}
                             </Table.Tbody>
@@ -176,10 +175,10 @@ function Deciding () {
                         </Group>
                         <Text>Az időszak ennyi munkanapot érint: 3</Text>
                         <Group justify={"center"} mt={10}>
-                            <Button style={{backgroundColor:"red"}}>
+                            <Button style={{backgroundColor:"red"}} onClick={ () => HandleDeciding(false)}>
                                 Elutasítás
                             </Button>
-                            <Button style={{backgroundColor:"green"}}>
+                            <Button style={{backgroundColor:"green"}} onClick={ () => HandleDeciding(true)}>
                                 Elfogadás
                             </Button>
                         </Group>

@@ -1,8 +1,7 @@
-﻿export default interface PendingRequests {
-    szemelyId: string;
-    statusz: number;
-    datum: string; // alapbol ez date only, ugyhogy majd át kell alakitani
-    kerelemSzam:string;
-    tipus: number;
+﻿import type PendingRequestBlockDto from "./PendingRequestBlockDto";
+import type RequestsGetDto from "./RequestsGetDto.ts";
 
+export default interface PendingRequests {
+    pendingRequestBlock:PendingRequestBlockDto
+    requests:RequestsGetDto[]
 }

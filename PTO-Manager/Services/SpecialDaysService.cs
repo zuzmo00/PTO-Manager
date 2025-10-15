@@ -9,7 +9,7 @@ namespace PTO_Manager.Services
     public interface ISpecialDaysService
     {
         public Task<string> AddSpecialDay(SpecialDaysAddDto specialDaysAddDto);
-        public Task<string> RemovelSpecialDay(DateOnly date);
+        public Task<string> RemovalSpecialDay(DateOnly date);
         public Task<List<SpecialDaysGetDto>> GetSpecialDays();
     }
     public class SpecialDaysService : ISpecialDaysService
@@ -40,7 +40,7 @@ namespace PTO_Manager.Services
             return _mapper.Map<List<SpecialDaysGetDto>>(days);
         }
 
-        public async Task<string> RemovelSpecialDay(DateOnly dateOnly)
+        public async Task<string> RemovalSpecialDay(DateOnly dateOnly)
         {
             var day = await _context.SpecialDays.FirstOrDefaultAsync(x => x.Date == dateOnly);
             if (day == null)

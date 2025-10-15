@@ -1,6 +1,6 @@
 ﻿namespace PTO_Manager.DTOs;
 
-public class PendingRequestsGetDto
+public class PendingRequestBlockDto
 {
     public string id { get; set; }
     public string name { get; set; }

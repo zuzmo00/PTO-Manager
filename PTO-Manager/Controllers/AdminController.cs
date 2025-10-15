@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
 using PTO_Manager.Services;
 
 namespace PTO_Manager.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AdminController:ControllerBase

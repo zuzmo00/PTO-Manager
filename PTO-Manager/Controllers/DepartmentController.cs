@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PTO_Manager.Context;
 using PTO_Manager.DTOs;
@@ -7,6 +8,7 @@ using PTO_Manager.Services;
 
 namespace PTO_Manager.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DepartmentController : ControllerBase
@@ -50,6 +52,26 @@ namespace PTO_Manager.Controllers
             try
             {
                 var removedId = await _departmentService.RemoveDepartment(id);
+                response.Data = removedId;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetDepartments")]
+        public async Task<IActionResult> GetDepartments()
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var removedId = await _departmentService.GetDepartments();
                 response.Data = removedId;
                 return Ok(response);
             }

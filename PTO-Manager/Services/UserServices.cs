@@ -119,6 +119,7 @@ namespace PTO_Manager.Services
             user.RemainingDay = new RemainingDay
             {
                 AllHoliday = userRegisterDto.AllHoliday,
+                RemainingDays = userRegisterDto.AllHoliday,
             };
             await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();

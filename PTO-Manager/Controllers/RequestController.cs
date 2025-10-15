@@ -8,6 +8,7 @@ using PTO_Manager.Services;
 
 namespace PTO_Manager.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RequestController: ControllerBase
@@ -60,5 +61,121 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        
+        
+        [HttpPost]
+        [Route("getPendingRequestByDepartment")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> GetPendingRequestByDepartment(PendingRequestsInputDto pendingRequestsInputDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.GetPendingRequestByDepartment(pendingRequestsInputDto);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+
+        
+        
+        
+        [HttpGet]
+        [Route("getPendingRequest")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> GetPendingRequest()
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.GetPendingRequest();
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+        
+        
+        [HttpPost]
+        [Route("makeDecision")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> MakeDecision(RequestDecisionInputDto requestDecisionInputDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.MakeDecision(requestDecisionInputDto);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+
+        [HttpPost]
+        [Route("RevokeWholeRequest")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> RevokeWholeRequest(RevokeRequestInputDto revokeRequestInput)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.RevokeWholeRequest(revokeRequestInput);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("RevokeARequest")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> RevokeARequest(RevokeRequestInputDto revokeRequestInput)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.RevokeARequest(revokeRequestInput);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+
+
     }
 }
