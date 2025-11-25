@@ -17,8 +17,8 @@ builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
-    //var connectionString = builder.Configuration.GetConnectionString(""); //Adrian
+    //var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
+    var connectionString = builder.Configuration.GetConnectionString("AdrianConnection2"); //Adrian
     //var connectionString = builder.Configuration.GetConnectionString(""); //Eszti
     optionsBuilder.UseSqlServer(connectionString);
 });
@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5174") 
+        policy.WithOrigins("http://localhost:5174", "http://localhost:5146") 
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
