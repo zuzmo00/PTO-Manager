@@ -37,6 +37,7 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        [AllowAnonymous]
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto user)

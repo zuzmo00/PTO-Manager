@@ -49,7 +49,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Administrators");
+                    b.ToTable("Administrators", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.Department", b =>
@@ -66,7 +66,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Department");
+                    b.ToTable("Department", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.Log", b =>
@@ -84,7 +84,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Log");
+                    b.ToTable("Log", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.Preferences", b =>
@@ -102,7 +102,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Preferences");
+                    b.ToTable("Preferences", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.RemainingDay", b =>
@@ -128,7 +128,7 @@ namespace PTO_Manager.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Remaining");
+                    b.ToTable("Remaining", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.Request", b =>
@@ -155,7 +155,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Requests");
+                    b.ToTable("Requests", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.RequestBlocks", b =>
@@ -189,7 +189,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RequestBlocks");
+                    b.ToTable("RequestBlocks", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.SpecialDays", b =>
@@ -206,7 +206,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SpecialDays");
+                    b.ToTable("SpecialDays", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.User", b =>
@@ -240,7 +240,7 @@ namespace PTO_Manager.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PTO_Manager.Entities.Admin", b =>
