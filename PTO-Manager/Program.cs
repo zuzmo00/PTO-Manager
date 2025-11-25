@@ -17,8 +17,8 @@ builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
-    //var connectionString = builder.Configuration.GetConnectionString(""); //Adrian
+    //var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
+    var connectionString = builder.Configuration.GetConnectionString("AdrianConnection2"); //Adrian
     //var connectionString = builder.Configuration.GetConnectionString(""); //Eszti
     optionsBuilder.UseSqlServer(connectionString);
 });
