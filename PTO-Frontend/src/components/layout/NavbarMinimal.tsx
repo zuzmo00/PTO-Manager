@@ -77,6 +77,21 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
             url: "Deciding",
             roles: ["Administrator"],
         },
+        {
+            icon: IconAlarm,
+            label: "Elfogadott bírálatok módosítása",
+            url: "AcceptedRequestManage",
+            roles: ["Administrator"],
+        },
+        {
+            icon: IconAlarm,
+            label: "Statisztikai adatok",
+            url: "StatisticsPage",
+            roles: ["Administrator"],
+        },
+
+
+
     ];
 
     const onLogout = () => {
