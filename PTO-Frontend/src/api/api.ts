@@ -10,6 +10,11 @@ import type RequestAddAsUserDto from "../Interfaces/RequestAddAsUserDto.ts";
 import type PendingRequestsInputDto from "../Interfaces/PendingRequestsInputDto.ts";
 import type PendingRequestForAdmins from "../Interfaces/PendingRequestForAdmins.ts";
 import type RequestDecisionInputDto from "../Interfaces/RequestDecisionInputDto.ts";
+import type DayOutStatisticsDto from "../Interfaces/DayOutStatisticsDto.ts";
+import type statInputDto from "../Interfaces/statInputDto.ts";
+import type secondChart from "../Interfaces/secondChart.ts";
+import type RequestStatsGetDto from "../Interfaces/RequestStatsGetDto.ts";
+import type StatsForRequestInputDto from "../Interfaces/StatsForRequestInputDto.ts";
 
 const Auth = {
     login: (dto: loginDto) =>
@@ -32,6 +37,14 @@ const Request = {
         axiosInstance.post<ApiResponse<PendingRequestForAdmins[]>>("/api/Request/getPendingRequestByDepartment", dto),
     postMakeDecision: (dto: RequestDecisionInputDto) =>
         axiosInstance.post<ApiResponse<string>>("/api/Request/makeDecision", dto),
+    postGetAcceptedRequests: (dto: PendingRequestsInputDto) =>
+        axiosInstance.post<ApiResponse<PendingRequestForAdmins[]>>("/api/Request/GetAcceptedRequestByParams", dto),
+    postGetStatsForRequest: (dto: StatsForRequestInputDto) =>
+        axiosInstance.post<ApiResponse<RequestStatsGetDto>>("/api/Request/GetStatsForRequest", dto),
+    postRevokeRequestAccept: (dto: RevokeRequestInputDto) =>
+        axiosInstance.post<ApiResponse<string>>("/api/Request/RevokeRequestAccept", dto),
+
+
 
 }
 const Department = {
@@ -39,8 +52,16 @@ const Department = {
         axiosInstance.get<ApiResponse<string[]>>("/api/Department/GetDepartments")
 }
 
+const Stats = {
+    postStatsProDepartment: (dto : statInputDto) =>
+        axiosInstance.post<ApiResponse<DayOutStatisticsDto[]>>("/api/Stats/GetStats", dto),
+
+    postStatsForWeek: (dto : statInputDto) =>
+        axiosInstance.post<ApiResponse<secondChart[]>>("/api/Stats/GetStatsForWeek", dto)
+}
 
 
-const api = {Auth, Request, Department}
+
+const api = {Auth, Request, Department, Stats}
 
 export default api;

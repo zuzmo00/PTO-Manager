@@ -13,11 +13,15 @@ namespace PTO_Manager.Services
     {
         Task<string> CreateRequestAsUser(RequestAddAsUserDto requestAddDto);
         Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays();
-        Task<List<PendingRequestBlockDto>> GetPendingRequestByDepartment(PendingRequestsInputDto pendingRequestsInputDto);
+        Task<List<PendingRequestBlockDto>> GetPendingRequestByParams(PendingRequestsInputDto pendingRequestsInputDto);
         Task<List<PendingRequestsGet>> GetPendingRequest();
         Task<string> MakeDecision(RequestDecisionInputDto requestDecisionInputDto);
         Task<string> RevokeWholeRequest(RevokeRequestInputDto revokeRequestInput);
         Task<string> RevokeARequest(RevokeRequestInputDto revokeRequestInput);
+        Task<List<PendingRequestBlockDto>> GetAcceptedRequestByParams(AcceptedRequestsInputDto acceptedRequestsInputDto);
+        Task<RequestStatsGetDto> GetStatsForRequest(StatsForRequestInputDto inputDto);
+        Task<string> RevokeRequest(RevokeRequestInputDto revokeRequestInput);
+
     }
     public class RequestService : IRequestService
     {
@@ -94,41 +98,107 @@ namespace PTO_Manager.Services
             await _dbContext.SaveChangesAsync();
             return "Successfully created request";
         }
-
-        public async Task<List<PendingRequestBlockDto>> GetPendingRequestByDepartment(PendingRequestsInputDto pendingRequestsInputDto)
+        
+        public async Task<List<PendingRequestBlockDto>> GetPendingRequestByParams(PendingRequestsInputDto pendingRequestsInputDto)
         {
-            var pendingRequestBlocks = await _dbContext.RequestBlocks
-                .Include(l=>l.Requests)
+            var query = _dbContext.RequestBlocks
+                .Include(l => l.Requests)
                 .Include(k => k.User)
-                .ThenInclude(l=>l.Department)
-                .Where(c => pendingRequestsInputDto.DepartmentIds.Contains(c.User.Department.DepartmentName) && c.Status== HolidayStatus.Pending )
-                .ToListAsync();
+                .ThenInclude(l => l.Department)
+                .Where(c => pendingRequestsInputDto.DepartmentIds.Contains(c.User.Department.DepartmentName) &&
+                            c.Status == HolidayStatus.Pending);
 
-
-            var temp = pendingRequestBlocks.Select(c => new PendingRequestBlockDto
+            if (!string.IsNullOrEmpty(pendingRequestsInputDto.inputtext))
             {
-                id = c.Id.ToString(),
-                name = c.User.Name,
-                department = c.User.Department.DepartmentName,
-                begin = c.StartDate,
-                end = c.EndDate,
+                query = query.Where(k=> EF.Functions.Like(k.User.Name, $"%{pendingRequestsInputDto.inputtext}%"));
             }
-            ).ToList();
 
-            return temp;
-
-            /*
-             Más logika, másik functionba kell
-
-            var temp = pendingRequestBlocks.SelectMany(v => v.Requests).Select(c => new PendingRequestsGetDto
-            {
-             id = c.Id.ToString(),
-             name = c.RequestBlock.User.Name,
-             department = c.RequestBlock.User.Department.DepartmentNev,
-             date = c.Date,
-            });
-             */
+            var result = await query
+                .OrderBy(l => l.StartDate)
+                .Select(c => new PendingRequestBlockDto
+                    {
+                        id = c.Id.ToString(),
+                        name = c.User.Name,
+                        department = c.User.Department.DepartmentName,
+                        begin = c.StartDate,
+                        end = c.EndDate,
+                    }
+                ).ToListAsync();
+            
+            return result;
         }
+        
+        public async Task<List<PendingRequestBlockDto>> GetAcceptedRequestByParams(AcceptedRequestsInputDto acceptedRequestsInputDto)
+        {
+            var query = _dbContext.RequestBlocks
+                .Include(l => l.Requests)
+                .Include(k => k.User)
+                .ThenInclude(l => l.Department)
+                .Where(c => acceptedRequestsInputDto.DepartmentIds.Contains(c.User.Department.DepartmentName) &&
+                            c.Status == HolidayStatus.Accepted);
+
+            if (!string.IsNullOrEmpty(acceptedRequestsInputDto.inputtext))
+            {
+                query = query.Where(k=> EF.Functions.Like(k.User.Name, $"%{acceptedRequestsInputDto.inputtext}%"));
+            }
+
+            var result = await query
+                .OrderBy(l => l.StartDate)
+                .Select(c => new PendingRequestBlockDto
+                    {
+                        id = c.Id.ToString(),
+                        name = c.User.Name,
+                        department = c.User.Department.DepartmentName,
+                        begin = c.StartDate,
+                        end = c.EndDate,
+                    }
+                ).ToListAsync();
+            
+            return result;
+        }
+
+        public async Task<RequestStatsGetDto> GetStatsForRequest(StatsForRequestInputDto inputDto)
+        {
+            var temp = await _dbContext.RequestBlocks
+                           .Include(l => l.User)
+                           .ThenInclude(k => k.RemainingDay)
+                           .FirstOrDefaultAsync(c => c.Id.ToString() == inputDto.requestBlockId) ??
+                       throw new Exception("No requestBlock with this id");
+                
+            var returndto = new RequestStatsGetDto
+            {
+                startDate = temp.StartDate.ToString("yyyy-MM-dd"),
+                endDate = temp.EndDate.ToString("yyyy-MM-dd"),
+                AllHoliday = temp.User.RemainingDay.AllHoliday,
+                RemainingDays = temp.User.RemainingDay.RemainingDays,
+                TimeProportional = (int)Math.Round(((double)temp.User.RemainingDay.AllHoliday /365) * DateTime.Now.DayOfYear)
+            };
+            
+            var hetvege_munkanap_e = _dbContext.Preferences.FirstOrDefault(c=>c.Name == "hetvege_munkanap_e");
+            var workdaycount = 0;
+            if (hetvege_munkanap_e == null || hetvege_munkanap_e.Value == false)
+            {
+                for (var date = temp.StartDate; date <= temp.EndDate; date = date.AddDays(1))
+                {
+                    if (!(date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday))
+                    {
+                        workdaycount++;
+                    }
+                }
+            }
+            else
+            {
+                workdaycount = (temp.EndDate.DayNumber - temp.StartDate.DayNumber) + 1;
+            }
+            
+            returndto.requiredDayOff = workdaycount;
+            returndto.RemainingDays += workdaycount;
+            
+            return returndto;
+        }
+        
+
+        
         
         public async Task<List<PendingRequestsGet>> GetPendingRequest()
         {
@@ -154,8 +224,12 @@ namespace PTO_Manager.Services
                     Date = k.Date,
                     Type = k.Type,
                     Id = k.Id.ToString(),
-                }).ToList()
-            }).ToList();
+                })
+                .OrderBy(l=>l.Date)
+                    .ToList()
+            })
+            .OrderBy(c=>c.PendingRequestBlock.begin)
+                .ToList();
 
             return temp;
         }
@@ -166,7 +240,7 @@ namespace PTO_Manager.Services
         {
             var requestsBlocks = await _dbContext.RequestBlocks
                 .Include(k => k.Requests)
-                .Where(x => x.UserId.ToString() == _aktualisFelhasznaloService.UserId).ToListAsync() ?? []; //évszám kimaradt, hogy melyik évre kell szűrni
+                .Where(x => x.UserId.ToString() == _aktualisFelhasznaloService.UserId && x.Status == HolidayStatus.Accepted || x.Status == HolidayStatus.Pending ).ToListAsync() ?? []; //évszám kimaradt, hogy melyik évre kell szűrni
             var specialDays = await _dbContext.SpecialDays.ToListAsync();// Itt is
             List<ReservedDaysDto> dtos = [];
        
@@ -209,6 +283,20 @@ namespace PTO_Manager.Services
                 true => "Request accepted succesfully",
                 false => "Request declined succesfully"
             };
+        }
+        
+        public async Task<string> RevokeRequest(RevokeRequestInputDto revokeRequestInput)
+        {
+            var requestBlock = await _dbContext.RequestBlocks
+                .Include(k => k.Requests)
+                .FirstOrDefaultAsync(x => x.Id.ToString() == revokeRequestInput.RequestBlockId) ?? throw new Exception("RequestBlock not found");
+
+            requestBlock.Status = HolidayStatus.Revoked;
+            
+            _dbContext.RequestBlocks.Update(requestBlock);
+            await _dbContext.SaveChangesAsync();
+            
+            return "Request revoked succesfully";
         }
         
         

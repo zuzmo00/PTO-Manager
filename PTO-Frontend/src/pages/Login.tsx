@@ -19,7 +19,7 @@ const Login = () => {
         },
         validate: {
             Email: (val: string) =>
-                val.length < 5 ? 'A törzsszám legalább 5 karakter hosszú kell, hogy legyen' : null,
+                val.length < 5 ? 'Az Email legalább 5 karakter hosszú kell, hogy legyen' : null,
             password: (val: string) =>
                 val.length < 6 ? 'A jelszónak legalább 6 karakter hosszúnak kell lennie.' : null,
         },

@@ -15,6 +15,7 @@ namespace PTO_Manager.Controllers
         {
             _statsService = statsService;
         }
+        
         [HttpPost]
         [Route("GetStats")]
         public async Task<IActionResult> GetStats([FromBody] Stats stats)
@@ -22,8 +23,29 @@ namespace PTO_Manager.Controllers
             ApiResponse response = new ApiResponse();
             try
             {
-                var token = await _statsService.GetStatsAsync(stats);
+                var token = await _statsService.GetStatsForDay(stats);
                 response.Data = token;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+        
+        
+        [HttpPost]
+        [Route("GetStatsForWeek")]
+        public async Task<IActionResult> GetStatsForWeek(Stats stats)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                response.Data = await _statsService.GetStatsForWeek(stats);
                 return Ok(response);
             }
             catch (Exception ex)

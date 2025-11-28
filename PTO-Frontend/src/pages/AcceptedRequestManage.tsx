@@ -15,52 +15,20 @@ import type PendingRequestForAdmins from "../Interfaces/PendingRequestForAdmins.
 import { notifications } from "@mantine/notifications";
 import api from "../api/api.ts";
 import type PendingRequestsInputDto from "../Interfaces/PendingRequestsInputDto.ts";
-import type RequestDecisionInputDto from "../Interfaces/RequestDecisionInputDto.ts";
+import type RequestStatsGetDto from "../Interfaces/RequestStatsGetDto.ts";
+import type RevokeRequestInputDto from "../Interfaces/RevokeRequestInputDto.ts";
 
 
 
 function AcceptedRequestManage () {
     const [isLoading,setIsLoading] = useState(false)
     const [modelOpen, {open, close}] = useDisclosure(false)
-    const [pendingData, setPendingData] = useState<PendingRequestForAdmins[] | []> ([])
+    const [acceptedData, setacceptedData] = useState<PendingRequestForAdmins[] | []> ([])
     const [dropdownValue, setDropdownValue] = useState<string[]|undefined> (undefined)
     const [departmments, setDepartmments] = useState<string[]> ([])
-
     const [currentRequest, setCurrentRequest] = useState<string> ("")
-
-    const templateList:PendingRequestForAdmins[] = [{
-        id:"34534534hbe",
-        name:"string",
-        department:"IT",
-        begin: "string",
-        end:"string",
-        requestId:"string"
-    },
-        {
-        id:"3453443534hbe",
-        name:"string",
-        department:"HR",
-        begin: "string",
-        end:"string",
-        requestId:"string"
-    },
-        {
-            id:"345347569534hbewsess",
-            name:"string",
-            department:"Pénzügy",
-            begin: "string",
-            end:"string",
-            requestId:"string"
-        },
-        {
-            id:"345323424534hhhhhhbe",
-            name:"string",
-            department:"IT",
-            begin: "string",
-            end:"string",
-            requestId:"string"
-        },
-    ]
+    const [searchText, setSearchText] = useState<string>("");
+    const [currentRequestStats, setCurrentRequestStats] = useState<RequestStatsGetDto | null> ()
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -69,8 +37,10 @@ function AcceptedRequestManage () {
             const l_departments = departmentdata.data?.data ?? []
             setDepartmments(l_departments);
 
-            const requestsByDepartment_data = templateList.filter(c=> l_departments.includes(c.department))
-            setPendingData(requestsByDepartment_data)
+            const inputdata : PendingRequestsInputDto = {departmentIds : departmentdata.data?.data ?? [], inputText: ""}
+            const Accepted_data_request = await api.Request.postGetAcceptedRequests(inputdata);
+            const AcceptedListData = Accepted_data_request.data?.data ?? []
+            setacceptedData(AcceptedListData)
 
         }
         catch(error){
@@ -91,11 +61,11 @@ function AcceptedRequestManage () {
 
     }, []);
 
-    const  HandleDeciding = async (BoolDecide:boolean) => {
+    const  HandleDeciding = async () => {
         setIsLoading(true)
         try{
-            const apiInput :RequestDecisionInputDto = {RequestBlockId: currentRequest, verdict: BoolDecide}
-            await api.Request.postMakeDecision(apiInput);
+            const apiInput :RevokeRequestInputDto = {RequestBlockId: currentRequest}
+            await api.Request.postRevokeRequestAccept(apiInput)
         }catch {
             notifications.show({
                 title:"Hiba",
@@ -106,19 +76,18 @@ function AcceptedRequestManage () {
             fetchPendingRequests();
             close()
             setIsLoading(false)
-
         }
     }
 
     const [serachParameters, setSearchParameters] = useState<string[] | undefined> (undefined)
 
     const fetchPendingRequests = async () =>{
-        const inputdata : PendingRequestsInputDto = {departmentIds : departmments}
-
-        const requestsByDepartment_data = templateList.filter(c=> departmments.includes(c.department))
-
-        setPendingData(requestsByDepartment_data)
+        const inputdata : PendingRequestsInputDto = {departmentIds : departmments, inputText: ""}
+        const Accepted_data_request = await api.Request.postGetAcceptedRequests(inputdata);
+        const AcceptedListData = Accepted_data_request.data?.data ?? []
+        setacceptedData(AcceptedListData)
     }
+
 
     {
         useEffect(() => {
@@ -127,8 +96,19 @@ function AcceptedRequestManage () {
         }, [dropdownValue]);
     }
 
-    const OpenDeciding = () => {
-        open();
+    const OpenDeciding = async (id: string) => {
+        setIsLoading(true);
+        try{
+            const response = await api.Request.postGetStatsForRequest({requestBlockId: id});
+            const response_data = response.data?.data;
+            setCurrentRequestStats(response_data)
+            open();
+        }catch (e){
+            console.log(e);
+        }finally {
+            setIsLoading(false);
+        }
+
     }
 
     return(
@@ -152,8 +132,11 @@ function AcceptedRequestManage () {
                             mt={35}
                             style={{}}
                             placeholder={"Írjon be egy nevet"}
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.currentTarget.value)}
+                            onKeyDown={(e) => e.key === "Enter" && fetchPendingRequests()}
                         />
-                        <Button mt={35}>Keresés</Button>
+                        <Button mt={35} onClick={fetchPendingRequests}>Keresés</Button>
                     </Group>
                 </Group>
                 <Center>
@@ -169,7 +152,7 @@ function AcceptedRequestManage () {
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>
-                                {pendingData.filter(c=> {
+                                {acceptedData.filter(c=> {
                                     if(serachParameters?.length === 0 || !serachParameters) {
                                         return true;
                                     }
@@ -180,7 +163,7 @@ function AcceptedRequestManage () {
                                         <Table.Td  style={{textAlign: "center"}}>{k.department}</Table.Td>
                                         <Table.Td  style={{textAlign: "center"}}>{k.begin}</Table.Td>
                                         <Table.Td  style={{textAlign: "center"}}>{k.end}</Table.Td>
-                                        <Table.Td  style={{textAlign: "center"}}><Button style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(); setCurrentRequest(k.id)}}>Visszavonás</Button></Table.Td>
+                                        <Table.Td  style={{textAlign: "center"}}><Button style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(k.id); setCurrentRequest(k.id)}}>Visszavonás</Button></Table.Td>
                                     </Table.Tr>
                                 ))}
                             </Table.Tbody>
@@ -196,15 +179,15 @@ function AcceptedRequestManage () {
                         <Divider mt={10} mb={10}/>
                         <Text>Kérvényezett időszak:</Text>
                         <Group justify={"center"}>
-                            <Text>2025-10-27-től </Text>
-                            <Text>2025-10-29-ig</Text>
+                            <Text>{currentRequestStats?.startDate}-től </Text>
+                            <Text>{currentRequestStats?.startDate}-ig</Text>
                         </Group>
-                        <Text>Az időszak ennyi munkanapot érint: 3</Text>
+                        <Text>Az időszak ennyi munkanapot érint: {currentRequestStats?.requiredDayOff}</Text>
                         <Group justify={"center"} mt={10}>
-                            <Button style={{backgroundColor:"red"}}>
+                            <Button style={{backgroundColor:"red"}} onClick={ () => close()}>
                                 Mégsem
                             </Button>
-                            <Button style={{backgroundColor:"green"}} >
+                            <Button style={{backgroundColor:"green"}} onClick={ () => HandleDeciding()} >
                                 Visszavonás
                             </Button>
                         </Group>

@@ -16,6 +16,7 @@ import { notifications } from "@mantine/notifications";
 import api from "../api/api.ts";
 import type PendingRequestsInputDto from "../Interfaces/PendingRequestsInputDto.ts";
 import type RequestDecisionInputDto from "../Interfaces/RequestDecisionInputDto.ts";
+import type RequestStatsGetDto from "../Interfaces/RequestStatsGetDto.ts";
 
 
 
@@ -25,9 +26,9 @@ function Deciding () {
     const [pendingData, setPendingData] = useState<PendingRequestForAdmins[] | []> ([])
     const [dropdownValue, setDropdownValue] = useState<string[]|undefined> (undefined)
     const [departmments, setDepartmments] = useState<string[]> ([])
-
+    const [searchText, setSearchText] = useState<string>("");
     const [currentRequest, setCurrentRequest] = useState<string> ("")
-
+    const [currentRequestStats, setCurrentRequestStats] = useState<RequestStatsGetDto | null> ()
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -35,7 +36,7 @@ function Deciding () {
             const departmentdata = await api.Department.getDepartments();
             setDepartmments(departmentdata.data?.data ?? []);
 
-            const inputdata : PendingRequestsInputDto = {departmentIds : departmentdata.data?.data ?? []}
+            const inputdata : PendingRequestsInputDto = {departmentIds : departmentdata.data?.data ?? [], inputText: ""}
             const requestsByDepartment_data = await api.Request.postPendingRequestByDepartment(inputdata);
 
             setPendingData(requestsByDepartment_data.data?.data ?? [])
@@ -72,7 +73,7 @@ function Deciding () {
                 color:"red"
             })
         }finally {
-            fetchPendingRequests();
+            await fetchPendingRequests();
             close()
             setIsLoading(false)
 
@@ -82,7 +83,7 @@ function Deciding () {
     const [serachParameters, setSearchParameters] = useState<string[] | undefined> (undefined)
 
     const fetchPendingRequests = async () =>{
-        const inputdata : PendingRequestsInputDto = {departmentIds : departmments}
+        const inputdata : PendingRequestsInputDto = {departmentIds : departmments , inputText: searchText}
         const requestsByDepartment_data = await api.Request.postPendingRequestByDepartment(inputdata);
 
         setPendingData(requestsByDepartment_data.data?.data ?? [])
@@ -90,12 +91,22 @@ function Deciding () {
 
     useEffect(() => {
         setSearchParameters(dropdownValue)
-        fetchPendingRequests();
     }, [dropdownValue]);
 
 
-    const OpenDeciding = () => {
-        open();
+    const OpenDeciding = async (id: string) => {
+        setIsLoading(true);
+        try{
+            const response = await api.Request.postGetStatsForRequest({requestBlockId: id});
+            const response_data = response.data?.data;
+            setCurrentRequestStats(response_data)
+            open();
+        }catch (e){
+            console.log(e);
+        }finally {
+            setIsLoading(false);
+        }
+
     }
 
     return(
@@ -119,8 +130,11 @@ function Deciding () {
                                 mt={35}
                                 style={{}}
                                 placeholder={"Írjon be egy nevet"}
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.currentTarget.value)}
+                                onKeyDown={(e) => e.key === "Enter" && fetchPendingRequests()}
                             />
-                            <Button mt={35}>Keresés</Button>
+                            <Button mt={35} onClick={fetchPendingRequests}>Keresés</Button>
                         </Group>
                     </Group>
                 <Center>
@@ -149,7 +163,7 @@ function Deciding () {
                                         <Table.Td>{k.begin}</Table.Td>
                                         <Table.Td>{k.end}</Table.Td>
                                         <Table.Td>{k.id}</Table.Td>
-                                        <Table.Td><Button style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(); setCurrentRequest(k.id)}}>Bírálat</Button></Table.Td>
+                                        <Table.Td><Button style={{backgroundColor:"red"}} onClick={() => {setCurrentRequest(k.id) ; OpenDeciding(k.id)}}>Bírálat</Button></Table.Td>
                                     </Table.Tr>
                                 ))}
                             </Table.Tbody>
@@ -163,17 +177,17 @@ function Deciding () {
                     <Box>
                         <Text fw={"bold"}>A kérelmező szabadság adatai:</Text>
                         <Box>
-                            <Text mt={10}>Összes kivehető szabasága: 30</Text>
-                            <Text>Meglévő szabadságok száma: 23</Text>
-                            <Text>Időarányosan kivehető napok száma: 24</Text>
+                            <Text mt={10}>Összes kivehető szabasága: {currentRequestStats?.allHoliday}</Text>
+                            <Text>Meglévő szabadságok száma: {currentRequestStats?.remainingDays}</Text>
+                            <Text>Időarányosan kivehető napok száma: {currentRequestStats?.timeProportional}</Text>
                         </Box>
                         <Divider mt={10} mb={10}/>
                         <Text>Kérvényezett időszak:</Text>
                         <Group justify={"center"}>
-                            <Text>2025-10-27-től </Text>
-                            <Text>2025-10-29-ig</Text>
+                            <Text>{currentRequestStats?.startDate}-től </Text>
+                            <Text>{currentRequestStats?.endDate}-ig</Text>
                         </Group>
-                        <Text>Az időszak ennyi munkanapot érint: 3</Text>
+                        <Text>Az időszak ennyi munkanapot érint: {currentRequestStats?.requiredDayOff}</Text>
                         <Group justify={"center"} mt={10}>
                             <Button style={{backgroundColor:"red"}} onClick={ () => HandleDeciding(false)}>
                                 Elutasítás

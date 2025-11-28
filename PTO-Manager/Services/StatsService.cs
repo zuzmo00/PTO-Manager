@@ -5,12 +5,14 @@ using PTO_Manager.Context;
 using PTO_Manager.DTOs;
 using PTO_Manager.DTOs.Enums;
 using PTO_Manager.Entities;
+using PTO_Manager.Entities.Enums;
 
 namespace PTO_Manager.Services
 {
     public interface IStatsService
     {
-        public Task<StatsGetDto> GetStatsAsync(Stats stats);
+        public Task<List<StatGetDto>> GetStatsForDay(Stats stats);
+        public Task<List<weeklyStatGetDto>> GetStatsForWeek(Stats stats);
     }
     public class StatsService : IStatsService
     {
@@ -23,6 +25,9 @@ namespace PTO_Manager.Services
             _mapper = mapper;
             _configuration = configuration;
         }
+        /*
+         
+         
         public async Task<StatsGetDto> GetStatsAsync(Stats stats)
         {
             var users = await _dbContext.Users.Where(u => u.DepartmentId == stats.DepartmentId).ToListAsync();
@@ -110,5 +115,68 @@ namespace PTO_Manager.Services
                 RequestTypeStats = finalTypeStats
             };
         }
+*/
+        public async Task<List<StatGetDto>> GetStatsForDay(Stats stats)
+        {
+            List<StatGetDto> returnobj = [];
+            
+            var temp = _dbContext.Requests
+                .Include(k => k.RequestBlock)
+                .ThenInclude(o => o.User)
+                .ThenInclude(l => l.Department)
+                .Where(u=>u.Date==stats.Date && u.RequestBlock.Status == HolidayStatus.Accepted || u.RequestBlock.Status == HolidayStatus.Pending );
+
+            var departments = await _dbContext.Department.ToListAsync();
+            List<string> colors = ["red", "green", "blue", "yellow", "purple"];
+            var index = 0;
+            returnobj.AddRange(departments.Select(item => new StatGetDto
+            {
+                color = colors[index++],
+                name = item.DepartmentName,
+                value = temp.Count(v => v.RequestBlock.User.Department.DepartmentName == item.DepartmentName),
+                details = new statDetailGetDto
+                {
+                    department = item.DepartmentName,
+                    date = stats.Date.ToString(),
+                    pto = temp.Count(v => v.Type == ReservationType.PTO && v.RequestBlock.User.Department.DepartmentName == item.DepartmentName),
+                    betegSzab = temp.Count(v => v.Type == ReservationType.SickLeave && v.RequestBlock.User.Department.DepartmentName == item.DepartmentName),
+                    kikuldetes = temp.Count(v => v.Type == ReservationType.BusinessTrip && v.RequestBlock.User.Department.DepartmentName == item.DepartmentName)
+                }
+            }));
+            
+            return returnobj;
+        }
+        
+        
+        public async Task<List<weeklyStatGetDto>> GetStatsForWeek(Stats stats)
+        {
+            List<weeklyStatGetDto> returnobj = [];
+            
+            var diff = (7 + (stats.Date.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var weekStart = stats.Date.AddDays(-diff);
+            
+            var weekEnd = weekStart.AddDays(6);
+            
+            var temp =  _dbContext.Requests
+                .Include(k => k.RequestBlock)
+                .ThenInclude(o => o.User)
+                .ThenInclude(l => l.Department)
+                .Where(u=>u.Date >= weekStart && u.Date <= weekEnd && u.RequestBlock.Status == HolidayStatus.Accepted || u.RequestBlock.Status == HolidayStatus.Pending );
+
+
+            for (var i = weekStart; i <= weekEnd; i = i.AddDays(1))
+            {
+                returnobj.Add(new weeklyStatGetDto
+                {
+                    date = i.ToString("yyyy-MM-dd"),
+                    pto = temp.Count(v => v.Date == i &&  v.Type == ReservationType.PTO),
+                    betegSzab = temp.Count(v => v.Date == i &&  v.Type == ReservationType.SickLeave),
+                    kikuldetes = temp.Count(v => v.Date == i &&  v.Type == ReservationType.BusinessTrip)
+                });
+            }
+            
+            return returnobj;
+        }
+        
     }
 }
