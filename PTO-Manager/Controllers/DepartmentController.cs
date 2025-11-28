@@ -26,6 +26,7 @@ namespace PTO_Manager.Controllers
 
         [HttpPost]
         [Route("CreateDepartment")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentDto departmentName)
         {
             ApiResponse response = new ApiResponse();

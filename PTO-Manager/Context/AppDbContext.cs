@@ -37,6 +37,8 @@ public class AppDbContext :DbContext
             .WithMany(s => s.AdminRoles)
             .HasForeignKey(u => u.UserId)
             .OnDelete(DeleteBehavior.NoAction);
+       
+       
 
     }
 }

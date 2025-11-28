@@ -1,7 +1,8 @@
-﻿export default interface DayOutStatisticsDto{
-    department: string,
-    date: string,
-    PTO: number,
-    BetegSzab: number,
-    Kikuldetes: number
+﻿import type statDetailGetDto from "./statDetailGetDto";
+
+export default interface DayOutStatisticsDto{
+    name: string,
+    value: number,
+    color: string,
+    details: statDetailGetDto
 }

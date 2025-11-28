@@ -5,7 +5,6 @@ namespace PTO_Manager.DTOs
 {
     public class Stats
     {
-        public int DepartmentId { get; set; }
         public DateOnly Date { get; set; }
     }
     public class  StatsGetDto

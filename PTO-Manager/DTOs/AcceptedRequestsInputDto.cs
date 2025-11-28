@@ -1,6 +1,6 @@
-﻿namespace PTO_Manager.DTOs;
+namespace PTO_Manager.DTOs;
 
-public class PendingRequestsInputDto
+public class AcceptedRequestsInputDto
 {
     public List<string> DepartmentIds { get; set; }
     public string inputtext { get; set; }

@@ -72,7 +72,51 @@ namespace PTO_Manager.Controllers
             ApiResponse response = new ApiResponse();
             try
             {
-                var requests = await _requestService.GetPendingRequestByDepartment(pendingRequestsInputDto);
+                var requests = await _requestService.GetPendingRequestByParams(pendingRequestsInputDto);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+        
+        
+        [HttpPost]
+        [Route("RevokeRequestAccept")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> RevokeRequest(RevokeRequestInputDto revokeRequestInput)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.RevokeRequest(revokeRequestInput);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+        [HttpPost]
+        [Route("GetAcceptedRequestByParams")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> GetAcceptedRequestByParams(AcceptedRequestsInputDto acceptedRequestsInputDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.GetAcceptedRequestByParams(acceptedRequestsInputDto);
                 response.Data = requests;
                 return Ok(response);
             }
@@ -87,6 +131,28 @@ namespace PTO_Manager.Controllers
 
         
         
+        [HttpPost]
+        [Route("GetStatsForRequest")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult>  GetStatsForRequest(StatsForRequestInputDto inputDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.GetStatsForRequest(inputDto);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+
+       
         
         [HttpGet]
         [Route("getPendingRequest")]

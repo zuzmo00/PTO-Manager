@@ -44,6 +44,9 @@ function Request () {
 
             const RemainingDays_response = await api.Request.getRemainingDays();
             setremainingDays(RemainingDays_response.data?.data ?? null)
+
+            const isWeekdayOff = await api.Request.getRemainingDays();
+            setremainingDays(RemainingDays_response.data?.data ?? null)
         }
         catch(error){
             console.log(error);
