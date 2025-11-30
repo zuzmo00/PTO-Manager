@@ -14,8 +14,8 @@ namespace PTO_Manager.Additional
             Services.AddScoped<IDepartmentService, DepartmentService>();
             Services.AddScoped<IAdminService, AdminService>();
             Services.AddScoped<IRequestService, RequestService>();
-            Services.AddScoped<IAktualisFelhasznaloService, AktualisFelhasznaloService>();
             Services.AddHttpContextAccessor();
+            Services.AddScoped<IAktualisFelhasznaloService, AktualisFelhasznaloService>();
             Services.AddScoped<IStatsService, StatsService>();
             Services.AddScoped<IPrefenceService, PreferenceService>();
         }
