@@ -45,8 +45,8 @@ function Request () {
             const RemainingDays_response = await api.Request.getRemainingDays();
             setremainingDays(RemainingDays_response.data?.data ?? null)
 
-            const isWeekdayOff = await api.Request.getRemainingDays();
-            setremainingDays(RemainingDays_response.data?.data ?? null)
+            const isWeekdayOff = await api.Preferences.postGetPreference({preferenceName: "hetvege_munkanap_e"});
+            setWeekendWorkday(isWeekdayOff.data?.data?.value ?? false)
         }
         catch(error){
             console.log(error);

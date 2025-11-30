@@ -89,8 +89,24 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
             url: "StatisticsPage",
             roles: ["Administrator"],
         },
-
-
+        {
+            icon: IconAlarm,
+            label: "Dolgozók kezelése",
+            url: "ManageWorkers",
+            roles: ["Administrator"],
+        },
+        {
+            icon: IconAlarm,
+            label: "Különleges napok kezelése",
+            url: "ManageSpecialDays",
+            roles: ["Administrator"],
+        },
+        {
+            icon: IconAlarm,
+            label: "Részlegek kezelése",
+            url: "ManageDepartment",
+            roles: ["Administrator"],
+        },
 
     ];
 

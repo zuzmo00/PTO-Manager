@@ -12,6 +12,7 @@ namespace PTO_Manager.Services
     public interface IRequestService
     {
         Task<string> CreateRequestAsUser(RequestAddAsUserDto requestAddDto);
+        Task<string> CreateRequestAsAdministrator(RequestAddAsAdministratorDto requestAddDto);
         Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays();
         Task<List<PendingRequestBlockDto>> GetPendingRequestByParams(PendingRequestsInputDto pendingRequestsInputDto);
         Task<List<PendingRequestsGet>> GetPendingRequest();
@@ -21,6 +22,7 @@ namespace PTO_Manager.Services
         Task<List<PendingRequestBlockDto>> GetAcceptedRequestByParams(AcceptedRequestsInputDto acceptedRequestsInputDto);
         Task<RequestStatsGetDto> GetStatsForRequest(StatsForRequestInputDto inputDto);
         Task<string> RevokeRequest(RevokeRequestInputDto revokeRequestInput);
+        Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDaysByUserId(GetRequestsInputDto requestsInputDto);
 
     }
     public class RequestService : IRequestService
@@ -98,6 +100,78 @@ namespace PTO_Manager.Services
             await _dbContext.SaveChangesAsync();
             return "Successfully created request";
         }
+        
+        
+        
+        public async Task<string> CreateRequestAsAdministrator(RequestAddAsAdministratorDto requestAddDto) 
+        {
+            
+            var existingRequest = await _dbContext.Requests
+                .AnyAsync(x => x.Date >= requestAddDto.Begin_Date
+                               && x.Date <= requestAddDto.End_Date
+                               && requestAddDto.UserId == x.RequestBlock.UserId.ToString());
+            if (existingRequest == true)
+            {
+                throw new Exception("Request already exists for this date");
+            }
+            
+            var RequestBlockNewItem = new RequestBlocks
+            {
+                UserId = new Guid(requestAddDto.UserId),
+                StartDate = requestAddDto.Begin_Date,
+                EndDate = requestAddDto.End_Date,
+                Status = HolidayStatus.Accepted,
+                Type = requestAddDto.RequestType,
+            };
+
+            List<Request> requests = [];
+            for (var i = requestAddDto.Begin_Date; i <= requestAddDto.End_Date; i = i.AddDays(1))
+            {
+                requests.Add(new Request
+                {
+                    RequestBlockId = RequestBlockNewItem.Id,
+                    Date = i,
+                    Type = requestAddDto.RequestType,
+                });
+            }
+            
+            //SMTP leater need to be added
+            var hetvege_munkanap_e = 
+                await _dbContext.Preferences
+                .FirstOrDefaultAsync(c=>c.Name == "hetvege_munkanap_e") ?? null;
+            var workdaycount = 0;
+            if (hetvege_munkanap_e == null || hetvege_munkanap_e.Value == false)
+            {
+                for (var date = requestAddDto.Begin_Date; date <= requestAddDto.End_Date; date = date.AddDays(1))
+                {
+                    if (!(date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday))
+                    {
+                        workdaycount++;
+                    }
+                }
+            }
+            else
+            {
+                workdaycount = (requestAddDto.End_Date.DayNumber - requestAddDto.Begin_Date.DayNumber) + 1;
+            }
+            
+            var userRemaineng = await _dbContext.Remaining
+                .FirstOrDefaultAsync(c=> c.UserId.ToString() == requestAddDto.UserId) ?? throw new Exception("User does not ha remaining days DB entry");
+            if (requestAddDto.RequestType == ReservationType.PTO)
+            {
+                userRemaineng.RemainingDays -= workdaycount;
+            }
+            
+            
+            
+            _dbContext.Remaining.Update(userRemaineng);
+            await _dbContext.Requests.AddRangeAsync(requests);
+            await _dbContext.RequestBlocks.AddAsync(RequestBlockNewItem);
+            await _dbContext.SaveChangesAsync();
+            return "Successfully created request";
+        }
+        
+        
         
         public async Task<List<PendingRequestBlockDto>> GetPendingRequestByParams(PendingRequestsInputDto pendingRequestsInputDto)
         {
@@ -197,8 +271,6 @@ namespace PTO_Manager.Services
             return returndto;
         }
         
-
-        
         
         public async Task<List<PendingRequestsGet>> GetPendingRequest()
         {
@@ -252,6 +324,34 @@ namespace PTO_Manager.Services
                         reservationType = ReservationType.PTO
                     }).ToList();
                     dtos.AddRange(temp);
+            }
+            
+            var specDays = specialDays.Select(c => new ReservedDaysDto
+            {
+                reservedDay = c.Date,
+                reservationType = c.IsWorkingDay ? ReservationType.SpecialWorkDay : ReservationType.SpecialHoliday
+            });
+            dtos.AddRange(specDays);
+           
+            return dtos;
+        }
+        
+        public async Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDaysByUserId(GetRequestsInputDto requestsInputDto)
+        {
+            var requestsBlocks = await _dbContext.RequestBlocks
+                .Include(k => k.Requests)
+                .Where(x => x.UserId.ToString() == requestsInputDto.userId && x.Status == HolidayStatus.Accepted || x.Status == HolidayStatus.Pending ).ToListAsync() ?? []; 
+            var specialDays = await _dbContext.SpecialDays.ToListAsync();
+            List<ReservedDaysDto> dtos = [];
+       
+            if (requestsBlocks.Count != 0) {
+                var temp =  requestsBlocks.SelectMany(c => c.Requests)
+                    .Select(k => new ReservedDaysDto
+                    {
+                        reservedDay = k.Date,
+                        reservationType = ReservationType.PTO
+                    }).ToList();
+                dtos.AddRange(temp);
             }
             
             var specDays = specialDays.Select(c => new ReservedDaysDto

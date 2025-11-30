@@ -23,6 +23,7 @@ namespace PTO_Manager.Services
         Task<Guid> Register(UserRegisterDto userRegisterDto);
         Task<RemainingDayGetDto> RemainingDaysGet();
         Task<RemainingDayGetDto> RemainingDaysGetByUserid(GetRemainingForUserDto userDto);
+        Task<List<GetUsersGetDto>> GetUsersByParams(GetUsersInputDTO userDto);
     }
 
     public class UserServices : IUserServices
@@ -140,10 +141,27 @@ namespace PTO_Manager.Services
         {
             var remainingEntity =
                 await _dbContext.Remaining.FirstOrDefaultAsync(c =>
-                    c.UserId.ToString() == userDto.UserId) ?? throw new Exception("User with the given parameters, not found in the database");
+                    c.UserId.ToString() == userDto.userId) ?? throw new Exception("User with the given parameters, not found in the database");
             var temp = _mapper.Map<RemainingDayGetDto>(remainingEntity);
             temp.TimeProportional = (int)Math.Round(((double)temp.AllHoliday /365) * DateTime.Now.DayOfYear);
             return temp;
+        }
+
+
+        public async Task<List<GetUsersGetDto>> GetUsersByParams(GetUsersInputDTO userDto)
+        {
+            var tempList = _dbContext.Users
+                .Include(k => k.Department)
+                .Where(c => userDto.DepartmentIds.Contains(c.Department.DepartmentName));
+            
+            if (!string.IsNullOrEmpty(userDto.inputText))
+            {
+                tempList = tempList.Where(k => EF.Functions.Like(k.Name, $"%{userDto.inputText}%"));
+            }
+            
+            var returnlist = await tempList.ToListAsync();
+            
+            return _mapper.Map<List<GetUsersGetDto>>(returnlist);
         }
     }
 }

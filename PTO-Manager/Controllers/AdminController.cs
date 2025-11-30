@@ -18,12 +18,12 @@ namespace PTO_Manager.Controllers
         }
         [HttpPost]
         [Route("CreateAdmin")]
-        public async Task<IActionResult> CreateAdmin([FromBody] Guid id, int reszlegId)
+        public async Task<IActionResult> CreateAdmin(CreateAdminInputDTO createAdminInputDto)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var token = await _adminService.CreateAdmin(id, reszlegId);
+                var token = await _adminService.CreateAdmin(createAdminInputDto);
                 response.Data = token;
                 return Ok(response);
             }
@@ -36,13 +36,13 @@ namespace PTO_Manager.Controllers
             }
         }
         [HttpDelete]
-        [Route("RemoveDepartment")]
-        public async Task<IActionResult> RemoveDepartment([FromBody] Guid id, int reszlegId)
+        [Route("RemovePriviligeByParams")]
+        public async Task<IActionResult> RemovePriviligeByParams(RemoveAdminPriviligeInputDto removeDto)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var result = await _adminService.RemoveDeparment(id, reszlegId);
+                var result = await _adminService.RemovePriviligeByDeparment(removeDto);
                 response.Data = result;
                 return Ok(response);
             }
@@ -75,12 +75,32 @@ namespace PTO_Manager.Controllers
         }
         [HttpPut]
         [Route("ChangePermissions")]
-        public async Task<IActionResult> ChangePermissions([FromBody] PermissionUpdateDto permissionUpdateDto)
+        public async Task<IActionResult> ChangePermissions(PermissionUpdateDto permissionUpdateDto)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var token = await _adminService.ChangePermissions(permissionUpdateDto);
+                response.Message = await _adminService.ChangePermissions(permissionUpdateDto);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+      
+        [HttpPost]
+        [Route("GetPermissionsForUser")]
+        public async Task<IActionResult>  GetPermissionsForUser(GetpermissionInputDto getpermissionInputDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var token = await _adminService.GetPermissionsForUser(getpermissionInputDto);
                 response.Data = token;
                 return Ok(response);
             }

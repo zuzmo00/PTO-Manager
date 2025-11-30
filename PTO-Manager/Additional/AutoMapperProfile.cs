@@ -32,5 +32,19 @@ public class AutoMapperProfile: Profile
         
         CreateMap<RemainingDay,RemainingDayGetDto>().ReverseMap();
         
+        CreateMap<PreferenceDto,Preferences>().ReverseMap();
+        
+        CreateMap<User,GetUsersGetDto>()
+            .ForMember(dest=> dest.DepartmentName, opt=>opt.MapFrom(src => src.Department.DepartmentName))
+            .ForMember(dest=> dest.Role, opt=>opt.MapFrom(src => src.Role.ToString()));
+        
+        CreateMap<PermissionGetDto, Admin>().ReverseMap()
+            .ForMember(dest=> dest.departmentName, opt=>opt.MapFrom(src => src.Department.DepartmentName))
+            .ForMember(dest=> dest.departmentId, opt=>opt.MapFrom(src => src.DepartmentId.ToString()));
+
+        CreateMap<DepartmentGetDto, Department>().ReverseMap()
+            .ForMember(dest => dest.AdminCount, opt => opt.MapFrom(src => src.Admins.Count));
+
+
     }
 }

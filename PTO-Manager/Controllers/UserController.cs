@@ -99,5 +99,28 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        
+        
+        [HttpPost]
+        [Route("GetUsersByParams")]
+        [Authorize]
+        public async Task<IActionResult>  GetUsersByParams(GetUsersInputDTO userDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var value = await _userService.GetUsersByParams(userDto);
+                response.Data = value;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
     }
 }

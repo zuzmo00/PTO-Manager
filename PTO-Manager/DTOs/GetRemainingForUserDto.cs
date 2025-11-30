@@ -2,5 +2,5 @@
 
 public class GetRemainingForUserDto
 {
-    public string UserId { get; set; }
+    public string userId { get; set; }
 }

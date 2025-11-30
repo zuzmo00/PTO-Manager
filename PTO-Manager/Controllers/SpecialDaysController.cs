@@ -15,17 +15,12 @@ namespace PTO_Manager.Controllers
     public class SpecialDaysController:ControllerBase
     {
         private readonly ISpecialDaysService _specialDaysService;
-        private readonly IMapper _mapper;
-        private readonly AppDbContext _appDbContext;
-
-        public SpecialDaysController(ISpecialDaysService specialDaysService, IMapper mapper, AppDbContext appDbContext)
+        public SpecialDaysController(ISpecialDaysService specialDaysService)
         {
             _specialDaysService = specialDaysService;
-            _mapper = mapper;
-            _appDbContext = appDbContext;
         }
         [HttpPost]
-        [Route("AddSpecalDay")]
+        [Route("AddSpecialDay")]
         public async Task<IActionResult> AddSpecialDays([FromBody]SpecialDaysAddDto specialDaysAddDto)
         {
             ApiResponse response = new ApiResponse();
@@ -43,14 +38,16 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        
         [HttpDelete]
-        [Route("Remove")]
-        public async Task<IActionResult> RemoveDay([FromBody] DateOnly date)
+        [Route("RemoveSpecialDay")]
+        public async Task<IActionResult> RemoveSpecialDay(SpecialDayRemoveDto specialDayRemoveDto)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                await _specialDaysService.RemovalSpecialDay(date);
+                await _specialDaysService.RemoveSpecialDay(specialDayRemoveDto);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -58,8 +55,28 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        
+        
+        [HttpPut]
+        [Route("ModifySpecialDay")]
+        public async Task<IActionResult> ModifySpecialDay(SpecialDayModifyDto specialDayModifyDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                await _specialDaysService.ModifySpecialDay(specialDayModifyDto);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(response);
+            }
+        }
+
+            
         [HttpGet]
-        [Route("ListDays")]
+        [Route("ListSpecialDays")]
         public async Task<IActionResult> ListDays()
         {
             ApiResponse response = new ApiResponse();
