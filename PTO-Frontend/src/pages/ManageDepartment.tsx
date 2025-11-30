@@ -259,7 +259,7 @@ function ManageDepartment () {
                         />
 
                         <TextInput
-                            label="Employee ID"
+                            label="Törzsszám"
                             placeholder="Pl.: 123"
                             value={newWorkerEmployeeId}
                             onChange={(e) => setNewWorkerEmployeeId(e.currentTarget.value)}
