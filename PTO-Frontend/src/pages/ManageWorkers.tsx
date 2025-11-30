@@ -65,6 +65,8 @@ function ManageWorkers () {
     const [newAddCanRevokeValue, setNewAddCanRevokeValue] = useState<boolean>();
     const [newAddDepartmentValue, setNewAddDepartmentValue] = useState<string>("");
 
+    const [AddNewWorkerModel, {open: openAddNewWorkerModel, close: closeAddNewWorkerModel}] = useDisclosure(false)
+
     const fetchData = async () => {
         setIsLoading(true);
         try{
@@ -74,7 +76,6 @@ function ManageWorkers () {
             const inputdata : GetUsersInputDto = {departmentIds : departmentdata.data?.data ?? [], inputText: searchText}
             const userDataResponse = await api.User.postGetUsersByParams(inputdata)
             setUserData(userDataResponse.data?.data ?? [])
-
 
         }
         catch(error){
@@ -250,6 +251,58 @@ function ManageWorkers () {
 
     }
 
+
+    const [newWorkerEmail, setNewWorkerEmail] = useState("");
+    const [newWorkerName, setNewWorkerName] = useState("");
+    const [newWorkerEmployeeId, setNewWorkerEmployeeId] = useState("");
+    const [newWorkerDepartment, setnewWorkerDepartment] = useState<string | null>(null);
+    const [newWorkerPassword, setNewWorkerPassword] = useState("");
+    const [newWorkerAllHoliday, setNewWorkerAllHoliday] = useState("");
+
+
+    const handleCreateWorker = async () => {
+        setIsLoading(true);
+
+        try {
+            await api.User.postRegister({
+                Email: newWorkerEmail,
+                Name: newWorkerName,
+                Employeeid: Number(newWorkerEmployeeId),
+                DepartmentName: newWorkerDepartment!,
+                Password: newWorkerPassword,
+                AllHoliday: Number(newWorkerAllHoliday)
+            });
+
+            notifications.show({
+                title: "Siker",
+                message: "Munkatárs sikeresen felvéve!",
+                color: "green"
+            });
+
+            setNewWorkerEmail("");
+            setNewWorkerName("");
+            setNewWorkerEmployeeId("");
+            setnewWorkerDepartment(null);
+            setNewWorkerPassword("");
+            setNewWorkerAllHoliday("");
+
+            closeAddNewWorkerModel();
+
+            await fetchData();
+        }
+        catch(error){
+            console.log(error);
+            notifications.show({
+                title:"Hiba",
+                message:"Hiba történt a lekérés során!",
+                color:"red"
+            })
+        }
+        finally {
+            setIsLoading(false);
+        }
+    };
+
     const OpenPermissonModifyModal = (permission: PermissionGetDto) => {
         setCurrentPermissonModify(permission);
         setCanRequestValue(permission.canRequest);
@@ -328,6 +381,11 @@ function ManageWorkers () {
                         </Table>
                     </Box>
                 </Center>
+                <Group mt={30}>
+                    <Button style={{backgroundColor:"green"}} onClick={() => openAddNewWorkerModel()}>
+                        Új munkatárs felvétele
+                    </Button>
+                </Group>
             </Paper>
 
             <Modal opened={modelOpen} onClose={close} centered title={"Kérelem leadása"} ta={"center"}>
@@ -531,6 +589,83 @@ function ManageWorkers () {
                             </Button>
                             <Button onClick={() => HandlePermissionDelete()}>
                                 Törlés
+                            </Button>
+                        </Group>
+                    </Box>
+                </Center>
+            </Modal>
+
+            <Modal opened={AddNewWorkerModel} onClose={closeAddNewWorkerModel} centered title={"Új munkatárs felvétele"} ta={"center"}>
+                <Center>
+                    <Box w={350}>
+                        <Text fw={"bold"} mb={10}>Adja meg az új munkatárs adatait!</Text>
+
+                        <TextInput
+                            label="Email"
+                            placeholder="Email"
+                            value={newWorkerEmail}
+                            onChange={(e) => setNewWorkerEmail(e.currentTarget.value)}
+                            mt={15}
+                            required
+                        />
+
+                        <TextInput
+                            label="Név"
+                            placeholder="Munkatárs neve"
+                            value={newWorkerName}
+                            onChange={(e) => setNewWorkerName(e.currentTarget.value)}
+                            mt={15}
+                            required
+                        />
+
+                        <TextInput
+                            label="Törzsszám"
+                            placeholder="Pl.: 123"
+                            value={newWorkerEmployeeId}
+                            onChange={(e) => setNewWorkerEmployeeId(e.currentTarget.value)}
+                            mt={15}
+                            required
+                        />
+
+                        <Select
+                            label="Részleg"
+                            placeholder="Válasszon részleget"
+                            data={departmments.map(d => ({
+                                value: d,
+                                label: d
+                            }))}
+                            value={newWorkerDepartment}
+                            onChange={setnewWorkerDepartment}
+                            mt={15}
+                            required
+                        />
+
+                        <TextInput
+                            label="Jelszó"
+                            placeholder="Jelszó"
+                            type="password"
+                            value={newWorkerPassword}
+                            onChange={(e) => setNewWorkerPassword(e.currentTarget.value)}
+                            mt={15}
+                            required
+                        />
+
+                        <TextInput
+                            label="Éves szabadságkeret"
+                            placeholder="Pl.: 26"
+                            value={newWorkerAllHoliday}
+                            onChange={(e) => setNewWorkerAllHoliday(e.currentTarget.value)}
+                            mt={15}
+                            required
+                        />
+
+                        <Group justify="center" mt={20}>
+                            <Button onClick={closeAddNewWorkerModel}>
+                                Mégsem
+                            </Button>
+
+                            <Button style={{ backgroundColor: "green" }} onClick={handleCreateWorker}>
+                                Mentés
                             </Button>
                         </Group>
                     </Box>

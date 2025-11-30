@@ -117,6 +117,8 @@ namespace PTO_Manager.Services
             }
 
             var user = _mapper.Map<User>(userRegisterDto);
+            var temp = await _dbContext.Department.FirstOrDefaultAsync(u => u.DepartmentName == userRegisterDto.DepartmentName) ?? throw new Exception("Department not found");
+            user.DepartmentId = temp.Id;
             user.RemainingDay = new RemainingDay
             {
                 AllHoliday = userRegisterDto.AllHoliday,

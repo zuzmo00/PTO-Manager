@@ -20,6 +20,7 @@ public class AutoMapperProfile: Profile
         CreateMap<User, Request>().ReverseMap();
         CreateMap<User, UserRegisterDto>().ReverseMap()
             .ForMember(dest => dest.RemainingDay, opt => opt.Ignore())
+            .ForMember(dest => dest.Department, opt => opt.Ignore())
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Password)));
 
         CreateMap<SpecialDays, SpecialDaysAddDto>().ReverseMap();

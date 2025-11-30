@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using PTO_Manager.Additional;
 using PTO_Manager.Context;
 using PTO_Manager.DTOs;
 using PTO_Manager.DTOs.Enums;
@@ -30,21 +31,22 @@ namespace PTO_Manager.Services
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IAktualisFelhasznaloService _aktualisFelhasznaloService;
-        public RequestService(AppDbContext dbContext, IMapper mapper, IAktualisFelhasznaloService aktualisFelhasznaloService)
+        private readonly ISMTPService _smtpService;
+        public RequestService(AppDbContext dbContext, IMapper mapper, IAktualisFelhasznaloService aktualisFelhasznaloService, ISMTPService smtpService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _aktualisFelhasznaloService = aktualisFelhasznaloService;
+            _smtpService = smtpService;
         }
 
         public async Task<string> CreateRequestAsUser(RequestAddAsUserDto requestAddDto) //Még a nap nincsen csökkentve, az elérhető napopok, pedig még nincs növelve
         {
-            
             var existingRequest = await _dbContext.Requests
                 .AnyAsync(x => x.Date >= requestAddDto.Begin_Date
                                && x.Date <= requestAddDto.End_Date
                                && _aktualisFelhasznaloService.UserId == x.RequestBlock.UserId.ToString());
-            if (existingRequest == true)
+            if (existingRequest)
             {
                 throw new Exception("Request already exists for this date");
             }
@@ -68,7 +70,6 @@ namespace PTO_Manager.Services
                 });
             }
             
-            //SMTP leater need to be added
             var hetvege_munkanap_e = 
                 await _dbContext.Preferences
                 .FirstOrDefaultAsync(c=>c.Name == "hetvege_munkanap_e") ?? null;
@@ -98,6 +99,37 @@ namespace PTO_Manager.Services
             await _dbContext.Requests.AddRangeAsync(requests);
             await _dbContext.RequestBlocks.AddAsync(RequestBlockNewItem);
             await _dbContext.SaveChangesAsync();
+            
+            var userObj = await _dbContext.Users
+                .Include(j=>j.RemainingDay)
+                .Include(k=>k.Department)
+                .ThenInclude(l=>l.Admins)
+                .ThenInclude(m=>m.User)
+                .FirstOrDefaultAsync(c=>c.Id.ToString() == _aktualisFelhasznaloService.UserId) ?? throw new Exception("User does not exist in DB");
+             var adminEmails = userObj.Department.Admins.Select(c=>c.User.Email).ToList();
+
+             var timeProportional =
+                 (int)Math.Round(((double)userObj.RemainingDay.AllHoliday / 365) * DateTime.Now.DayOfYear);
+
+             var emailpayload = new EmailPayload
+             {
+                 To = adminEmails,
+                 Subject = $"{userObj.Name} szabadságkérelmet nyújtott be.",
+                 TemplateName = "RequestCreation",
+                 Placeholders = new Dictionary<string, string>
+                 {
+                     { "Nev", userObj.Name },
+                     { "Torzsszam", userObj.Employeeid.ToString() },
+                     { "Reszleg", userObj.Department.DepartmentName },
+                     { "Tol", requestAddDto.Begin_Date.ToString("yyyy-MM-dd") },
+                     { "Ig", requestAddDto.End_Date.ToString("yyyy-MM-dd") },
+                     { "EviOsszSzab", userObj.RemainingDay.AllHoliday.ToString() },
+                     { "MegKiveheto", userObj.RemainingDay.RemainingDays.ToString() },
+                     { "IdoaranyosanKiveheto", timeProportional.ToString() },
+                 }
+             };
+
+             await _smtpService.BeerkezoKerelemErtesitokAsync(emailpayload);
             return "Successfully created request";
         }
         
@@ -310,10 +342,11 @@ namespace PTO_Manager.Services
         
         public async Task<List<ReservedDaysDto>> GetAllRequestsAndSpecialDays()
         {
+            var tempid = _aktualisFelhasznaloService.UserId;
             var requestsBlocks = await _dbContext.RequestBlocks
                 .Include(k => k.Requests)
-                .Where(x => x.UserId.ToString() == _aktualisFelhasznaloService.UserId && x.Status == HolidayStatus.Accepted || x.Status == HolidayStatus.Pending ).ToListAsync() ?? []; //évszám kimaradt, hogy melyik évre kell szűrni
-            var specialDays = await _dbContext.SpecialDays.ToListAsync();// Itt is
+                .Where(x =>(x.UserId.ToString() == tempid && (x.Status == HolidayStatus.Accepted || x.Status == HolidayStatus.Pending || x.Type == ReservationType.PlannedLeave)) ).ToListAsync() ?? []; 
+            var specialDays = await _dbContext.SpecialDays.ToListAsync();
             List<ReservedDaysDto> dtos = [];
        
             if (requestsBlocks.Count != 0) {

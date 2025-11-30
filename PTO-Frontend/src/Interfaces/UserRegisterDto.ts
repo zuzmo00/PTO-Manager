@@ -2,7 +2,7 @@ export default interface UserRegisterDto {
     Email:string,
     Name:string,
     Employeeid:number,
-    DepartmentId:number,
+    DepartmentName:string,
     Password:string,
     AllHoliday:number
 }

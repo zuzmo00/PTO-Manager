@@ -10,7 +10,7 @@ namespace PTO_Manager.DTOs
         public string Email { get; set; }
         public string Name { get; set; }
         public int Employeeid { get; set; }
-        public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
         public string Password { get; set; }
         public int AllHoliday { get; set; }
     }

@@ -12,8 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddServicess();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
@@ -24,14 +24,10 @@ builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 });
 
 //Scoped
+
 builder.Services.AddServicess();
 //Scoped\\
 //auth
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Administrator"));
-    options.AddPolicy("AllUserPolicy", policy => policy.RequireRole("User" , "Administrator"));
-});
 
 
 //auth\\
@@ -49,6 +45,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Administrator"));
+    options.AddPolicy("AllUserPolicy", policy => policy.RequireRole("User" , "Administrator"));
+});
 
 
 
