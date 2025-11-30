@@ -8,6 +8,6 @@ public class Department
     public int Id { get; set; }
     public string DepartmentName { get; set; }
     
-    List<User>? Users { get; set; }
-    List<Admin>? Admins { get; set; }
+    public List<User> Users { get; set; }
+    public List<Admin> Admins { get; set; }
 }

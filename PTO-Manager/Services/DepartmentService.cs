@@ -8,8 +8,9 @@ namespace PTO_Manager.Services
 {
     public interface IDepartmentService
     {
-        public Task<int> CreateDepartment(CreateDepartmentDto departmentName);
-        public Task<int> RemoveDepartment(int id);
+        public Task<string> CreateDepartment(CreateDepartmentDto departmentName);
+        public Task<string> RemoveDepartment(DepartmentRemoveDto departmentRemoveDto);
+        Task<List<DepartmentGetDto>> GetDepartmentsForManage();
         public Task<List<string>> GetDepartments();
     }
     public class DepartmentService : IDepartmentService
@@ -22,7 +23,7 @@ namespace PTO_Manager.Services
             _mapper = mapper;
         }
 
-        public async Task<int> CreateDepartment(CreateDepartmentDto departmentName)
+        public async Task<string> CreateDepartment(CreateDepartmentDto departmentName)
         {
             var newDepartment = new Department
             {
@@ -30,23 +31,31 @@ namespace PTO_Manager.Services
             };
             await _context.Department.AddAsync(newDepartment);
             await _context.SaveChangesAsync();
-            return newDepartment.Id;
+            return $"Department added successfully with id: {newDepartment.Id}";
         }
-        public async Task<int> RemoveDepartment(int id)
+        
+        public async Task<string> RemoveDepartment(DepartmentRemoveDto departmentRemoveDto)
         {
-            var department = await _context.Department.FindAsync(id);
-            if (department == null)
-            {
-                throw new Exception("Department not found");
-            }
+            var department = await _context.Department.FirstOrDefaultAsync(k=>k.Id == departmentRemoveDto.id) ?? throw new Exception("Department not found");
+            
             _context.Department.Remove(department);
             await _context.SaveChangesAsync();
-            return id;
+            return "Department removed successfully";
         }
+        
+        
         public async Task<List<string>> GetDepartments()
         {
             var department = await _context.Department.Select(c => c.DepartmentName).ToListAsync();
             return department;
+        }
+        
+        public async Task<List<DepartmentGetDto>> GetDepartmentsForManage()
+        {
+            var department = await _context.Department
+                .Include(k=>k.Admins)
+                .ToListAsync();
+            return _mapper.Map<List<DepartmentGetDto>>(department);
         }
     }
 }

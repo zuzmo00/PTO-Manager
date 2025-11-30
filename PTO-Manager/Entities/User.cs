@@ -20,7 +20,7 @@ namespace PTO_Manager.Entities
         public string Password { get; set; }
         
         public RemainingDay RemainingDay { get; set; }
-        public List<Admin>? AdminRoles { get; set; }
+        public List<Admin> AdminRoles { get; set; }
         public List<Request>? Requests { get; set; }
     }
 }

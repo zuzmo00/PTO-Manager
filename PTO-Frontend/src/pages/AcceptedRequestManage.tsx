@@ -37,9 +37,10 @@ function AcceptedRequestManage () {
             const l_departments = departmentdata.data?.data ?? []
             setDepartmments(l_departments);
 
-            const inputdata : PendingRequestsInputDto = {departmentIds : departmentdata.data?.data ?? [], inputText: ""}
+            const inputdata : PendingRequestsInputDto = {departmentIds : l_departments, inputText: ""}
             const Accepted_data_request = await api.Request.postGetAcceptedRequests(inputdata);
             const AcceptedListData = Accepted_data_request.data?.data ?? []
+
             setacceptedData(AcceptedListData)
 
         }
@@ -73,7 +74,7 @@ function AcceptedRequestManage () {
                 color:"red"
             })
         }finally {
-            fetchPendingRequests();
+             await fetchPendingRequests();
             close()
             setIsLoading(false)
         }
@@ -82,19 +83,21 @@ function AcceptedRequestManage () {
     const [serachParameters, setSearchParameters] = useState<string[] | undefined> (undefined)
 
     const fetchPendingRequests = async () =>{
-        const inputdata : PendingRequestsInputDto = {departmentIds : departmments, inputText: ""}
+        if (departmments.length === 0) {
+            {/*Race condition*/}
+            return;
+        }
+        const inputdata : PendingRequestsInputDto = {departmentIds : departmments, inputText: searchText}
         const Accepted_data_request = await api.Request.postGetAcceptedRequests(inputdata);
         const AcceptedListData = Accepted_data_request.data?.data ?? []
         setacceptedData(AcceptedListData)
     }
 
 
-    {
-        useEffect(() => {
-            setSearchParameters(dropdownValue)
-            fetchPendingRequests();
+    useEffect(() => {
+        setSearchParameters(dropdownValue)
+        fetchPendingRequests();
         }, [dropdownValue]);
-    }
 
     const OpenDeciding = async (id: string) => {
         setIsLoading(true);

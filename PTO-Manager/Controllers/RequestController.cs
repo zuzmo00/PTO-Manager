@@ -14,17 +14,14 @@ namespace PTO_Manager.Controllers
     public class RequestController: ControllerBase
     {
         private readonly IRequestService _requestService;
-        private readonly AppDbContext _appDbContext;
-        private readonly IMapper _mapper;
-        public RequestController(IRequestService requestService, AppDbContext appDbContext, IMapper mapper)
+  
+        public RequestController(IRequestService requestService)
         {
             _requestService = requestService;
-            _appDbContext = appDbContext;
-            _mapper = mapper;
         }
+        
         [HttpPost]
         [Route("CreateRequest")]
-
         public async Task<IActionResult> CreateRequest([FromBody] RequestAddAsUserDto requestAddDto)
         {
             ApiResponse response = new ApiResponse();
@@ -41,6 +38,27 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        
+        [HttpPost]
+        [Route("CreateRequestAsAdministrator")]
+        public async Task<IActionResult> CreateRequestAsAdministrator(RequestAddAsAdministratorDto requestAddDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                response.Message = await _requestService.CreateRequestAsAdministrator(requestAddDto);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+ 
         [HttpGet]
         [Route("GetAllRequests")]
         [Authorize(Policy = "AllUserPolicy")]
@@ -243,5 +261,25 @@ namespace PTO_Manager.Controllers
         }
 
 
+        [HttpPost]
+        [Route("GetAllRequestsAndSpecialDaysByUserId")]
+        [Authorize(Policy = "AllUserPolicy")]
+        public async Task<IActionResult> GetAllRequestsAndSpecialDaysByUserId(GetRequestsInputDto requestsInputDto)
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var requests = await _requestService.GetAllRequestsAndSpecialDaysByUserId(requestsInputDto);
+                response.Data = requests;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
     }
 }

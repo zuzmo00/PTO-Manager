@@ -4,6 +4,9 @@ import Request from "../pages/Request.tsx";
 import Deciding from "../pages/Deciding.tsx";
 import AcceptedRequestManage from "../pages/AcceptedRequestManage.tsx";
 import StatisticsPage from "../pages/StatisticsPage.tsx";
+import ManageWorkers from "../pages/ManageWorkers.tsx";
+import ManageSpecialDays from "../pages/ManageSpecialDays.tsx";
+import ManageDepartment from "../pages/ManageDepartment.tsx";
 
 export const routes = [
     {
@@ -36,6 +39,22 @@ export const routes = [
         component: < StatisticsPage />,
         isPrivate: true
     },
+    {
+        path: "ManageWorkers",
+        component: < ManageWorkers />,
+        isPrivate: true
+    },
+    {
+        path: "ManageSpecialDays",
+        component: < ManageSpecialDays />,
+        isPrivate: true
+    },
+    {
+        path: "ManageDepartment",
+        component: < ManageDepartment />,
+        isPrivate: true
+    },
+
 
 
 

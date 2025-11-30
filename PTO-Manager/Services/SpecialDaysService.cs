@@ -9,7 +9,8 @@ namespace PTO_Manager.Services
     public interface ISpecialDaysService
     {
         public Task<string> AddSpecialDay(SpecialDaysAddDto specialDaysAddDto);
-        public Task<string> RemovalSpecialDay(DateOnly date);
+        public Task<string> RemoveSpecialDay(SpecialDayRemoveDto specialDayRemoveDto);
+        public Task<string> ModifySpecialDay(SpecialDayModifyDto specialDayModifyDto);
         public Task<List<SpecialDaysGetDto>> GetSpecialDays();
     }
     public class SpecialDaysService : ISpecialDaysService
@@ -33,16 +34,28 @@ namespace PTO_Manager.Services
             await _context.SaveChangesAsync();
             return "Special day added successfully";
         }
+        
+        public async Task<string> ModifySpecialDay(SpecialDayModifyDto specialDayModifyDto)
+        {
+            var tempDay= await _context.SpecialDays.FirstOrDefaultAsync(x => x.Id.ToString() == specialDayModifyDto.Id) ?? throw new Exception("Day not found");
+            
+            tempDay.IsWorkingDay = specialDayModifyDto.IsWorkingDay;
+            
+            _context.SpecialDays.Update(tempDay);
+            await _context.SaveChangesAsync();
+            
+            return "Special day modified successfully";
+        }
 
         public async Task<List<SpecialDaysGetDto>> GetSpecialDays()
         {
-            var days=await _context.SpecialDays.ToListAsync();
+            var days=await _context.SpecialDays.OrderBy(k=>k.Date).ToListAsync();
             return _mapper.Map<List<SpecialDaysGetDto>>(days);
         }
 
-        public async Task<string> RemovalSpecialDay(DateOnly dateOnly)
+        public async Task<string> RemoveSpecialDay(SpecialDayRemoveDto specialDayRemoveDto)
         {
-            var day = await _context.SpecialDays.FirstOrDefaultAsync(x => x.Date == dateOnly);
+            var day = await _context.SpecialDays.FirstOrDefaultAsync(x => x.Id == specialDayRemoveDto.dayId);
             if (day == null)
             {
                 throw new Exception("Day dose not exists");

@@ -14,14 +14,10 @@ namespace PTO_Manager.Controllers
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;
-        private readonly IMapper _mapper;
-        private readonly AppDbContext _appDbContext;
 
-        public DepartmentController(IDepartmentService departmentService, IMapper mapper, AppDbContext appDbContext)
+        public DepartmentController(IDepartmentService departmentService)
         {
             _departmentService = departmentService;
-            _mapper = mapper;
-            _appDbContext = appDbContext;
         }
 
         [HttpPost]
@@ -32,8 +28,7 @@ namespace PTO_Manager.Controllers
             ApiResponse response = new ApiResponse();
             try
             {
-                var id = await _departmentService.CreateDepartment(departmentName);
-                response.Data = id;
+                response.Message = await _departmentService.CreateDepartment(departmentName); 
                 return Ok(response);
             }
             catch (Exception ex)
@@ -47,12 +42,12 @@ namespace PTO_Manager.Controllers
 
         [HttpDelete]
         [Route("RemoveDepartment")]
-        public async Task<IActionResult> RemoveDepartment([FromBody] int id)
+        public async Task<IActionResult> RemoveDepartment(DepartmentRemoveDto departmentRemoveDto)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var removedId = await _departmentService.RemoveDepartment(id);
+                var removedId = await _departmentService.RemoveDepartment(departmentRemoveDto);
                 response.Data = removedId;
                 return Ok(response);
             }
@@ -64,6 +59,8 @@ namespace PTO_Manager.Controllers
                 return BadRequest(response);
             }
         }
+        
+        
         [AllowAnonymous]
         [HttpGet]
         [Route("GetDepartments")]
@@ -73,6 +70,28 @@ namespace PTO_Manager.Controllers
             try
             {
                 var removedId = await _departmentService.GetDepartments();
+                response.Data = removedId;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+        
+        
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("GetDepartmentsForManage")]
+        public async Task<IActionResult> GetDepartmentsForManage()
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var removedId = await _departmentService.GetDepartmentsForManage();
                 response.Data = removedId;
                 return Ok(response);
             }
