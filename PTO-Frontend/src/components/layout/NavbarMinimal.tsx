@@ -1,8 +1,9 @@
 import {
-    IconAlarm,
+    IconAdjustmentsStar,
+    IconAlarm, IconChartDots, IconEditOff,
     IconGitPullRequest,
     IconHome,
-    IconLogout,
+    IconLogout, IconPercentage25, IconUsers,
 } from "@tabler/icons-react";
 import classes from "./NavbarMinimalColored.module.css";
 import { rem, Button, useMantineTheme, Image } from "@mantine/core";
@@ -78,31 +79,31 @@ export function NavbarMinimal({ toggle = () => {} }: NavbarMinimalProps) {
             roles: ["Administrator"],
         },
         {
-            icon: IconAlarm,
+            icon: IconEditOff,
             label: "Elfogadott bírálatok módosítása",
             url: "AcceptedRequestManage",
             roles: ["Administrator"],
         },
         {
-            icon: IconAlarm,
+            icon: IconChartDots,
             label: "Statisztikai adatok",
             url: "StatisticsPage",
             roles: ["Administrator"],
         },
         {
-            icon: IconAlarm,
+            icon: IconUsers,
             label: "Dolgozók kezelése",
             url: "ManageWorkers",
             roles: ["Administrator"],
         },
         {
-            icon: IconAlarm,
+            icon: IconAdjustmentsStar,
             label: "Különleges napok kezelése",
             url: "ManageSpecialDays",
             roles: ["Administrator"],
         },
         {
-            icon: IconAlarm,
+            icon: IconPercentage25,
             label: "Részlegek kezelése",
             url: "ManageDepartment",
             roles: ["Administrator"],
