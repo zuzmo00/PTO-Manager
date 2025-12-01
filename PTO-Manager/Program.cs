@@ -6,6 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PTO_Manager.Additional;
 using PTO_Manager.Context;
+using System.Net;
+
+System.Net.ServicePointManager.SecurityProtocol =
+    SecurityProtocolType.Tls12 |
+    SecurityProtocolType.Tls13;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +22,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("CsanadLaptopConnection");
+    var connectionString = builder.Configuration.GetConnectionString("CsanadConnection");
+    //var connectionString = builder.Configuration.GetConnectionString("CsanadLaptopConnection");
     //var connectionString = builder.Configuration.GetConnectionString("AdrianConnection2"); //Adrian
     //var connectionString = builder.Configuration.GetConnectionString(""); //Eszti
     optionsBuilder.UseSqlServer(connectionString);
