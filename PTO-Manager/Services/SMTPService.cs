@@ -6,7 +6,9 @@ using PTO_Manager.Additional;
 namespace PTO_Manager.Services;
 public interface ISMTPService
 {
-    Task BeerkezoKerelemErtesitokAsync(EmailPayload EmailAdatok);
+    Task IncomingRequestNotification(EmailPayload EmailAdatok);
+
+    Task DecisionNotifyEmail(EmailPayload EmailAdatok);
     /*
     Task KerelemElfogadasErtesitokAsync(EmailDontesAdatok payload);
     Task KerelemElut_VisszavonErtesitokAsync(EmailDontesAdatok payload);
@@ -26,7 +28,7 @@ public class SMTPService : ISMTPService
     }
 
     
-    public async Task BeerkezoKerelemErtesitokAsync(EmailPayload EmailAdatok)
+    public async Task IncomingRequestNotification(EmailPayload EmailAdatok)
     {
         string baseDir = AppContext.BaseDirectory;
         
@@ -46,77 +48,86 @@ public class SMTPService : ISMTPService
         {
             Host = _config["Smtp:Host"],
             Port = int.Parse(_config["Smtp:Port"]),
-            EnableSsl = true,
-            Credentials = new NetworkCredential(
-                _config["Smtp:Username"],
-                _config["Smtp:Password"])
+            EnableSsl = false,
+            UseDefaultCredentials = true
         };
 
        
         var toMail = new MailMessage
         {
-            From = new MailAddress(_config["Smtp:From"]!),
+            From = new MailAddress("noreply@example.com"),
             Subject = EmailAdatok.Subject,
             Body = toHtmlContent,
             IsBodyHtml = true
         };
         
-        
         foreach (var tomai in EmailAdatok.To)
         {
             toMail.To.Add(tomai);
         }
-
         
-        await client.SendMailAsync(toMail);
+        try
+        {
+            await client.SendMailAsync(toMail);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("SMTP ERROR: " + ex.ToString());
+            throw;
+        }
     
     }
     
-    
-    
-    /*
-    
-    public async Task KerelemElfogadasErtesitokAsync(EmailDontesAdatok payload)
+    public async Task DecisionNotifyEmail(EmailPayload EmailAdatok)
     {
         string baseDir = AppContext.BaseDirectory;
         
-        string toTemplatePath = Path.Combine(baseDir,"Additional",payload.ToTemplateElfogado);
+        string TemplatePath = Path.Combine(baseDir,"Additional",EmailAdatok.TemplateName);
         
         if (!File.Exists(TemplatePath))
-            throw new FileNotFoundException($"Email template not found at {toTemplatePath}");
+            throw new FileNotFoundException($"Email template not found at {TemplatePath}");
         
+        string toHtmlContent = await File.ReadAllTextAsync(TemplatePath);
         
-        string ElfogadoHtmlContent = await File.ReadAllTextAsync(TemplatePath);
-        
-        
-        foreach (var placeholder in payload.Placeholders)
+        foreach (var placeholder in EmailAdatok.Placeholders)
         {
-            toElfogadoHtmlContent = toElfogadoHtmlContent.Replace($"{{{{{placeholder.Key}}}}}", placeholder.Value); 
+            toHtmlContent = toHtmlContent.Replace($"{{{{{placeholder.Key}}}}}", placeholder.Value); 
         }
         
         using var client = new SmtpClient
         {
             Host = _config["Smtp:Host"],
             Port = int.Parse(_config["Smtp:Port"]),
-            EnableSsl = true,
-            Credentials = new NetworkCredential(
-                _config["Smtp:User"],
-                _config["Smtp:Password"])
+            EnableSsl = false,
+            UseDefaultCredentials = true
         };
-        
-        var UgyintezoTOMail = new MailMessage
+
+       
+        var toMail = new MailMessage
         {
-            From = new MailAddress(_config["Smtp:From"]!),
-            Subject = payload.Subject,
-            Body = toElfogadoHtmlContent,
+            From = new MailAddress("noreply@example.com"),
+            Subject = EmailAdatok.Subject,
+            Body = toHtmlContent,
             IsBodyHtml = true
         };
         
-       
-        UgyintezoTOMail.To.Add(payload.UgyintezoCime);
+        foreach (var tomai in EmailAdatok.To)
+        {
+            toMail.To.Add(tomai);
+        }
         
-        await client.SendMailAsync(UgyintezoTOMail);
-       
+        try
+        {
+            await client.SendMailAsync(toMail);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("SMTP ERROR: " + ex.ToString());
+            throw;
+        }
+    
     }
-    */
+    
+    
+  
 }

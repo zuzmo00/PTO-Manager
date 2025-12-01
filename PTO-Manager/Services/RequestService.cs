@@ -115,7 +115,7 @@ namespace PTO_Manager.Services
              {
                  To = adminEmails,
                  Subject = $"{userObj.Name} szabadságkérelmet nyújtott be.",
-                 TemplateName = "RequestCreation",
+                 TemplateName = "RequestSubmitted.html",
                  Placeholders = new Dictionary<string, string>
                  {
                      { "Nev", userObj.Name },
@@ -129,7 +129,7 @@ namespace PTO_Manager.Services
                  }
              };
 
-             await _smtpService.BeerkezoKerelemErtesitokAsync(emailpayload);
+             await _smtpService.IncomingRequestNotification(emailpayload);
             return "Successfully created request";
         }
         
@@ -411,6 +411,33 @@ namespace PTO_Manager.Services
             
             _dbContext.RequestBlocks.Update(requestBlock);
             await _dbContext.SaveChangesAsync();
+            
+            
+            var userObj = await _dbContext.Users
+                .FirstOrDefaultAsync(c=>c.Id.ToString() == requestBlock.UserId.ToString()) ?? throw new Exception("User does not exist in DB");
+            
+            var dontesstring = requestDecisionInputDto.verdict switch
+            {
+                true => "Kérelem elfogadva",
+                false => "Kérelem elutasítva"
+            };
+            
+            var emailpayload = new EmailPayload
+            {
+                To = [userObj.Email],
+                Subject = "Szabadságkérelmét módosította egy ügyintéző",
+                TemplateName = "RequestDecision.html",
+                Placeholders = new Dictionary<string, string>
+                {
+                    { "Nev", userObj.Name },
+                    { "Tol", requestBlock.StartDate.ToString("yyyy-MM-dd") },
+                    { "Ig", requestBlock.EndDate.ToString("yyyy-MM-dd") },
+                    { "Dontes", dontesstring }
+                }
+            };
+
+            await _smtpService.DecisionNotifyEmail(emailpayload);
+            
             return requestDecisionInputDto.verdict switch
             {
                 true => "Request accepted succesfully",

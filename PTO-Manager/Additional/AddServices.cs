@@ -18,6 +18,7 @@ namespace PTO_Manager.Additional
             Services.AddScoped<IAktualisFelhasznaloService, AktualisFelhasznaloService>();
             Services.AddScoped<IStatsService, StatsService>();
             Services.AddScoped<IPrefenceService, PreferenceService>();
+            Services.AddScoped<ISMTPService, SMTPService>();
         }
     }
 }
