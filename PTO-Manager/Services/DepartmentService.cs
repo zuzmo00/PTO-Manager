@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PTO_Manager.Context;
 using PTO_Manager.DTOs;
 using PTO_Manager.Entities;
+using SzabadsagKezeloWebApp.Services;
 
 namespace PTO_Manager.Services
 {
@@ -10,17 +11,20 @@ namespace PTO_Manager.Services
     {
         public Task<string> CreateDepartment(CreateDepartmentDto departmentName);
         public Task<string> RemoveDepartment(DepartmentRemoveDto departmentRemoveDto);
-        Task<List<DepartmentGetDto>> GetDepartmentsForManage();
+        public Task<List<DepartmentGetDto>> GetDepartmentsForManage();
         public Task<List<string>> GetDepartments();
+        public Task<List<string>> GetDepartmentsForDecide();
     }
     public class DepartmentService : IDepartmentService
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        public DepartmentService (AppDbContext context, IMapper mapper)
+        private readonly IAktualisFelhasznaloService _aktualisFelhasznaloService;
+        public DepartmentService (AppDbContext context, IMapper mapper, IAktualisFelhasznaloService aktualisFelhasznaloService)
         {
             _context = context;
             _mapper = mapper;
+            _aktualisFelhasznaloService = aktualisFelhasznaloService;
         }
 
         public async Task<string> CreateDepartment(CreateDepartmentDto departmentName)
@@ -49,6 +53,19 @@ namespace PTO_Manager.Services
             var department = await _context.Department.Select(c => c.DepartmentName).ToListAsync();
             return department;
         }
+        
+        public async Task<List<string>> GetDepartmentsForDecide()
+        {
+            var userObj = await _context.Users
+                .Include(k => k.AdminRoles)
+                .ThenInclude(k=>k.Department)
+                .FirstOrDefaultAsync(l => l.Id.ToString() == _aktualisFelhasznaloService.UserId) ?? throw new Exception("Administrator not found");
+            
+            var departments = userObj.AdminRoles.Select(k => k.Department.DepartmentName).ToList();
+            
+            return departments;
+        }
+
         
         public async Task<List<DepartmentGetDto>> GetDepartmentsForManage()
         {

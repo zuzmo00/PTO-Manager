@@ -17,6 +17,8 @@ import api from "../api/api.ts";
 import type PendingRequestsInputDto from "../Interfaces/PendingRequestsInputDto.ts";
 import type RequestStatsGetDto from "../Interfaces/RequestStatsGetDto.ts";
 import type RevokeRequestInputDto from "../Interfaces/RevokeRequestInputDto.ts";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 
 
@@ -30,10 +32,14 @@ function AcceptedRequestManage () {
     const [searchText, setSearchText] = useState<string>("");
     const [currentRequestStats, setCurrentRequestStats] = useState<RequestStatsGetDto | null> ()
 
+    const { ugyintezoiJogosultsagok } = useContext(AuthContext);
+
+
+
     const fetchData = async () => {
         setIsLoading(true);
         try{
-            const departmentdata = await api.Department.getDepartments();
+            const departmentdata = await api.Department.GetDepartmentsForDecide();
             const l_departments = departmentdata.data?.data ?? []
             setDepartmments(l_departments);
 
@@ -114,6 +120,12 @@ function AcceptedRequestManage () {
 
     }
 
+
+    const HasPermissionToRevoke = (_DepartmentName: string) => {
+        const privilege = ugyintezoiJogosultsagok?.find(k=>k.departmentName === _DepartmentName)
+        return privilege?.canRevoke ?? false;
+    }
+
     return(
         <Container>
             <Paper p="xl" radius="md" withBorder pos = "relative">
@@ -166,7 +178,7 @@ function AcceptedRequestManage () {
                                         <Table.Td  style={{textAlign: "center"}}>{k.department}</Table.Td>
                                         <Table.Td  style={{textAlign: "center"}}>{k.begin}</Table.Td>
                                         <Table.Td  style={{textAlign: "center"}}>{k.end}</Table.Td>
-                                        <Table.Td  style={{textAlign: "center"}}><Button style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(k.id); setCurrentRequest(k.id)}}>Visszavonás</Button></Table.Td>
+                                        <Table.Td  style={{textAlign: "center"}}><Button disabled={!HasPermissionToRevoke(k.department)} style={{backgroundColor:"red"}} onClick={() => {OpenDeciding(k.id); setCurrentRequest(k.id)}}>Visszavonás</Button></Table.Td>
                                     </Table.Tr>
                                 ))}
                             </Table.Tbody>

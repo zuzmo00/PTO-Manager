@@ -85,6 +85,8 @@ const Request = {
 const Department = {
     getDepartments: () =>
         axiosInstance.get<ApiResponse<string[]>>("/api/Department/GetDepartments"),
+    GetDepartmentsForDecide: () =>
+        axiosInstance.get<ApiResponse<string[]>>("/api/Department/GetDepartmentsForDecide"),
     getDepartmentsForManage: () =>
         axiosInstance.get<ApiResponse<DepartmentGetDto[]>>("/api/Department/GetDepartmentsForManage"),
     CreateDepartment: (dto: CreateDepartmentDto) =>

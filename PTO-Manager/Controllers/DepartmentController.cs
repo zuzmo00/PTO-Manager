@@ -83,6 +83,30 @@ namespace PTO_Manager.Controllers
         }
         
         
+        
+        [HttpGet]
+        [Route("GetDepartmentsForDecide")]
+        public async Task<IActionResult> GetDepartmentsForDecide()
+        {
+            ApiResponse response = new ApiResponse();
+            try
+            {
+                var removedId = await _departmentService.GetDepartmentsForDecide();
+                response.Data = removedId;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = 400;
+                response.Message = ex.Message;
+                response.Success = false;
+                return BadRequest(response);
+            }
+        }
+
+        
+        
+        
         [AllowAnonymous]
         [HttpGet]
         [Route("GetDepartmentsForManage")]

@@ -1,6 +1,7 @@
 export default interface AdminPrivileges {
-    reszlegId: number;
-    kerhet: boolean;
-    biralhat: boolean;
-    visszavonhat: boolean;
+    departmentId: number;
+    departmentName: string;
+    canRequest: boolean;
+    canDecide: boolean;
+    canRevoke: boolean;
 }
