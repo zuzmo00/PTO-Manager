@@ -25,6 +25,8 @@ import type PermissionUpdateDto from "../Interfaces/permissionUpdateDto.ts";
 import type CreateAdminInputDTO from "../Interfaces/CreateAdminInputDTO.ts";
 import type RemoveAdminPriviligeInputDto from "../Interfaces/RemoveAdminPriviligeInputDto.ts";
 
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 
 function ManageWorkers () {
@@ -66,6 +68,9 @@ function ManageWorkers () {
     const [newAddDepartmentValue, setNewAddDepartmentValue] = useState<string>("");
 
     const [AddNewWorkerModel, {open: openAddNewWorkerModel, close: closeAddNewWorkerModel}] = useDisclosure(false)
+
+    const { ugyintezoiJogosultsagok } = useContext(AuthContext);
+
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -312,6 +317,14 @@ function ManageWorkers () {
     };
 
 
+    const HasPermissionToRequest =(_DepartmentName: string) => {
+        const privilege = ugyintezoiJogosultsagok?.find(k=>k.departmentName === _DepartmentName)
+        return privilege?.canRequest ?? false;
+    }
+
+
+
+
 
     return(
         <Container size="lg">
@@ -368,7 +381,7 @@ function ManageWorkers () {
                                         <Table.Td style={{textAlign: "center"}}>{k.role}</Table.Td>
                                         <Table.Td style={{textAlign: "center"}}>{k.email}</Table.Td>
                                         <Table.Td style={{textAlign: "center",display: "flex", justifyContent: "center", alignItems: "center", gap: "10px"}}>
-                                              <Button onClick={() => {OpenRequestModal(k.id); setcurrentUser(k.id)}}>
+                                              <Button disabled={!HasPermissionToRequest(k.departmentName)} onClick={() => {OpenRequestModal(k.id); setcurrentUser(k.id)}}>
                                                     Szabadság felvétel
                                                 </Button>
                                                 <Button color="red" onClick={() => {OpenPermissonModal(k.id); setcurrentUser(k.id)}}>

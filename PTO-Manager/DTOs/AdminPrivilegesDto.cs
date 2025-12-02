@@ -4,6 +4,8 @@ public class AdminPrivilegesDto
 {
     public int DepartmentId { get; set; }
     
+    public string DepartmentName { get; set; }
+    
     public bool CanRequest { get; set; }
     
     public bool CanDecide { get; set; }

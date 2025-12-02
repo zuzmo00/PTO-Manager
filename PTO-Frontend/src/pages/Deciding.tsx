@@ -17,7 +17,8 @@ import api from "../api/api.ts";
 import type PendingRequestsInputDto from "../Interfaces/PendingRequestsInputDto.ts";
 import type RequestDecisionInputDto from "../Interfaces/RequestDecisionInputDto.ts";
 import type RequestStatsGetDto from "../Interfaces/RequestStatsGetDto.ts";
-
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 
 function Deciding () {
@@ -30,10 +31,12 @@ function Deciding () {
     const [currentRequest, setCurrentRequest] = useState<string> ("")
     const [currentRequestStats, setCurrentRequestStats] = useState<RequestStatsGetDto | null> ()
 
+    const { ugyintezoiJogosultsagok } = useContext(AuthContext);
+
     const fetchData = async () => {
         setIsLoading(true);
         try{
-            const departmentdata = await api.Department.getDepartments();
+            const departmentdata = await api.Department.GetDepartmentsForDecide();
             setDepartmments(departmentdata.data?.data ?? []);
 
             const inputdata : PendingRequestsInputDto = {departmentIds : departmentdata.data?.data ?? [], inputText: ""}
@@ -109,6 +112,13 @@ function Deciding () {
 
     }
 
+    const HasPermissionToDecide =(_DepartmentName: string) => {
+        const privilege = ugyintezoiJogosultsagok?.find(k=>k.departmentName === _DepartmentName)
+        return privilege?.canDecide ?? false;
+    }
+
+
+
     return(
         <Container>
             <Paper p="xl" radius="md" withBorder pos = "relative">
@@ -163,7 +173,7 @@ function Deciding () {
                                         <Table.Td>{k.begin}</Table.Td>
                                         <Table.Td>{k.end}</Table.Td>
                                         <Table.Td>{k.id}</Table.Td>
-                                        <Table.Td><Button style={{backgroundColor:"red"}} onClick={() => {setCurrentRequest(k.id) ; OpenDeciding(k.id)}}>Bírálat</Button></Table.Td>
+                                        <Table.Td><Button disabled={!HasPermissionToDecide(k.department)} style={{backgroundColor:"red"}} onClick={() => {setCurrentRequest(k.id) ; OpenDeciding(k.id)}}>Bírálat</Button></Table.Td>
                                     </Table.Tr>
                                 ))}
                             </Table.Tbody>

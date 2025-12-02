@@ -80,7 +80,9 @@ namespace PTO_Manager.Services
             List<AdminPrivilegesDto> adminPrivilegesList = new List<AdminPrivilegesDto>();
             if (user.Role == Roles.Administrator)
             {
-                var admin = await _dbContext.Administrators.Where(x => x.UserId == user.Id).ToListAsync();
+                var admin = await _dbContext.Administrators
+                    .Include(k=>k.Department)
+                    .Where(x => x.UserId == user.Id).ToListAsync();
                 foreach (var item in admin)
                 {
                     AdminPrivilegesDto adminPrivilegesDto = new AdminPrivilegesDto
@@ -89,6 +91,7 @@ namespace PTO_Manager.Services
                         CanRevoke = item.CanRevoke,
                         CanDecide = item.CanDecide,
                         DepartmentId = item.DepartmentId,
+                        DepartmentName = item.Department.DepartmentName,
                     };
                     adminPrivilegesList.Add(adminPrivilegesDto);
                 }
