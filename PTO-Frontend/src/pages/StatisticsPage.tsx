@@ -144,11 +144,13 @@ function StatisticsPage () {
                         <BarChart
                             h={300}
                             data={dataforchart()}
+                            withLegend
+                            legendProps={{ verticalAlign: 'bottom', height: 50 }}
                             dataKey="department"
                             valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
                             withBarValueLabel
                             series={[
-                                { name: 'betegSzab', label:'Beteg szabadság', color: 'violet.6' },
+                                { name: 'betegSzab', label:'Betegszabadság', color: 'violet.6' },
                                 { name: 'pto',  label:'Fizetett szabadság', color: 'blue.6' },
                                 { name: 'kikuldetes', label:'Kiküldetés', color: 'teal.6' },
                             ]}
@@ -168,7 +170,7 @@ function StatisticsPage () {
                             withLegend
                             legendProps={{ verticalAlign: 'bottom', height: 50 }}
                             series={[
-                                { name: 'betegSzab', label:'Beteg szabadság', color: 'violet.6' },
+                                { name: 'betegSzab', label:'Betegszabadság', color: 'violet.6' },
                                 { name: 'pto',  label:'Fizetett szabadság', color: 'blue.6' },
                                 { name: 'kikuldetes', label:'Kiküldetés', color: 'teal.6' },
                             ]}
