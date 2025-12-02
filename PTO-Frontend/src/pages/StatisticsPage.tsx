@@ -148,9 +148,9 @@ function StatisticsPage () {
                             valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
                             withBarValueLabel
                             series={[
-                                { name: 'betegSzab', color: 'violet.6' },
-                                { name: 'pto', color: 'blue.6' },
-                                { name: 'kikuldetes', color: 'teal.6' },
+                                { name: 'betegSzab', label:'Beteg szabadság', color: 'violet.6' },
+                                { name: 'pto',  label:'Fizetett szabadság', color: 'blue.6' },
+                                { name: 'kikuldetes', label:'Kiküldetés', color: 'teal.6' },
                             ]}
                             withYAxis={false}
                         />
@@ -168,9 +168,9 @@ function StatisticsPage () {
                             withLegend
                             legendProps={{ verticalAlign: 'bottom', height: 50 }}
                             series={[
-                                { name: 'betegSzab', color: 'violet.6' },
-                                { name: 'pto', color: 'blue.6' },
-                                { name: 'kikuldetes', color: 'teal.6' },
+                                { name: 'betegSzab', label:'Beteg szabadság', color: 'violet.6' },
+                                { name: 'pto',  label:'Fizetett szabadság', color: 'blue.6' },
+                                { name: 'kikuldetes', label:'Kiküldetés', color: 'teal.6' },
                             ]}
                         />
                     </Box>
