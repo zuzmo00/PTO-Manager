@@ -155,6 +155,10 @@ function ManageWorkers () {
 
             const apiInput :RemoveAdminPriviligeInputDto = { departmentName: currentPriviligeDepartmentToDelete, id: currentUser}
             await api.Admin.deleteRemovePriviligeByParams(apiInput)
+
+            const inputdata : GetUsersInputDto = {departmentIds : departmments, inputText: searchText}
+            const userDataResponse = await api.User.postGetUsersByParams(inputdata)
+            setUserData(userDataResponse.data?.data ?? [])
         }catch {
             notifications.show({
                 title:"Hiba",
@@ -176,6 +180,10 @@ function ManageWorkers () {
 
             const apiInput :CreateAdminInputDTO = {id: currentUser, departmentName: newAddDepartmentValue, CanDecide: newAddCanDecideValue ?? false, CanRequest: newAddCanRequestValue ?? false, CanRevoke: newAddCanRevokeValue ?? false}
             await api.Admin.postCreateAdmin(apiInput)
+
+            const inputdata : GetUsersInputDto = {departmentIds : departmments, inputText: searchText}
+            const userDataResponse = await api.User.postGetUsersByParams(inputdata)
+            setUserData(userDataResponse.data?.data ?? [])
         }catch {
             notifications.show({
                 title:"Hiba",
