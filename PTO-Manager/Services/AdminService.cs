@@ -109,7 +109,8 @@ namespace PTO_Manager.Services
             if (roleToRemove != null)
                 _context.Administrators.Remove(roleToRemove);
             
-            if (user.AdminRoles.Count == 0)
+            var adminCount = await _context.Administrators.CountAsync(a => a.UserId == user.Id);
+            if (adminCount == 0)
             {
                 user.Role = Roles.User;
             }

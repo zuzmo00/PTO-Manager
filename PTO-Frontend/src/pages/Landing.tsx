@@ -141,7 +141,7 @@ function Landing(){
                                     w = {15}
                                     h = {15}
                                     style = {{
-                                        backgroundColor: "orangered",
+                                        backgroundColor: "red",
                                         borderRadius: 4,
                                         border: '1px solid rgba(0, 0, 0, 0.1)',
                                     }}
@@ -153,7 +153,7 @@ function Landing(){
                                 w = {15}
                                 h = {15}
                                 style = {{
-                                    backgroundColor: "lightcoral",
+                                    backgroundColor: "darkblue",
                                     borderRadius: 4,
                                     border: '1px solid rgba(0,0,0,0.1)',
                                 }}/>
@@ -197,10 +197,10 @@ function Landing(){
                             if (!isFoglalt) {
                                 //skips this step
                             }else if(dayitem?.reservationType === 5) { //SpecialWorkDay
-                                backgroundColor = "orangered"
+                                backgroundColor = "red"
                                 color = "white"
                             }else if(dayitem?.reservationType === 6) { //SpecialHoliday
-                                backgroundColor = "lightcoral"
+                                backgroundColor = "darkblue"
                                 color = "white"
                             }else if(isFoglalt) { //SpecialHoliday
                                 backgroundColor = "forestgreen"

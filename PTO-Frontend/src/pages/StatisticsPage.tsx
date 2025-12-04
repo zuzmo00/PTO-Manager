@@ -153,6 +153,7 @@ function StatisticsPage () {
                                 { name: 'betegSzab', label:'Betegszabadság', color: 'violet.6' },
                                 { name: 'pto',  label:'Fizetett szabadság', color: 'blue.6' },
                                 { name: 'kikuldetes', label:'Kiküldetés', color: 'teal.6' },
+                                { name: 'betervezett', label:'Betervezett szabadság', color: 'yellow.6' },
                             ]}
                             withYAxis={false}
                         />
@@ -173,6 +174,7 @@ function StatisticsPage () {
                                 { name: 'betegSzab', label:'Betegszabadság', color: 'violet.6' },
                                 { name: 'pto',  label:'Fizetett szabadság', color: 'blue.6' },
                                 { name: 'kikuldetes', label:'Kiküldetés', color: 'teal.6' },
+                                { name: 'betervezett', label:'Betervezett szabadság', color: 'yellow.6' },
                             ]}
                         />
                     </Box>
