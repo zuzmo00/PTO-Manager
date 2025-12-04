@@ -107,7 +107,11 @@ namespace PTO_Manager.Services
                 .FirstOrDefault(r => r.Department.DepartmentName == removeDto.departmentName);
 
             if (roleToRemove != null)
+            {
                 _context.Administrators.Remove(roleToRemove);
+                user.AdminRoles.Remove(roleToRemove);
+                await _context.SaveChangesAsync(); 
+            }
             
             var adminCount = await _context.Administrators.CountAsync(a => a.UserId == user.Id);
             if (adminCount == 0)

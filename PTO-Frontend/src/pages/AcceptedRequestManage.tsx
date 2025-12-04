@@ -195,7 +195,7 @@ function AcceptedRequestManage () {
                         <Text>Kérvényezett időszak:</Text>
                         <Group justify={"center"}>
                             <Text>{currentRequestStats?.startDate}-től </Text>
-                            <Text>{currentRequestStats?.startDate}-ig</Text>
+                            <Text>{currentRequestStats?.endDate}-ig</Text>
                         </Group>
                         <Text>Az időszak ennyi munkanapot érint: {currentRequestStats?.requiredDayOff}</Text>
                         <Group justify={"center"} mt={10}>
