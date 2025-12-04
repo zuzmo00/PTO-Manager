@@ -142,7 +142,8 @@ namespace PTO_Manager.Services
                     date = stats.Date.ToString(),
                     pto = temp.Count(v => v.Type == ReservationType.PTO && v.User.Department.DepartmentName == item.DepartmentName),
                     betegSzab = temp.Count(v => v.Type == ReservationType.SickLeave && v.User.Department.DepartmentName == item.DepartmentName),
-                    kikuldetes = temp.Count(v => v.Type == ReservationType.BusinessTrip && v.User.Department.DepartmentName == item.DepartmentName)
+                    kikuldetes = temp.Count(v => v.Type == ReservationType.BusinessTrip && v.User.Department.DepartmentName == item.DepartmentName),
+                    betervezett = temp.Count(v => v.Type == ReservationType.PlannedLeave && v.User.Department.DepartmentName == item.DepartmentName)
                 }
             }));
             
@@ -179,7 +180,10 @@ namespace PTO_Manager.Services
                         item.Requests.Count(v => v.Date == i && v.Type == ReservationType.SickLeave)),
                         
                     kikuldetes = temp.Sum(item =>
-                        item.Requests.Count(v => v.Date == i && v.Type == ReservationType.BusinessTrip))
+                        item.Requests.Count(v => v.Date == i && v.Type == ReservationType.BusinessTrip)),
+                    
+                    betervezett = temp.Sum(item =>
+                        item.Requests.Count(v => v.Date == i && v.Type == ReservationType.PlannedLeave))
                 });
             }
             

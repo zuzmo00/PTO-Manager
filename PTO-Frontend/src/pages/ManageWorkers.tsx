@@ -49,13 +49,13 @@ function ManageWorkers () {
 
     const [weekendWorkday, setWeekendWorkday] = useState<boolean>(false);
     const [value, setValue] = useState<[string | null, string | null]>([null, null]);
-    const today = dayjs().add(1,"day").startOf("day").toDate();
+
     const [reservedDays, setReservedDays] = useState<ReservedDays[]> ([]);
 
     const [userPermissons, setUserPermissons] = useState<PermissionGetDto[]> ([]);
     const [currentPermissonModify, setCurrentPermissonModify] = useState<PermissionGetDto | null> ()
 
-    const RequestTypes = [{name:"PTO",value:1},{name:"Betegszabadság",value:2}, {name:"Üzleti út",value:3}, {name:"Betervezett szabadság",value:4}]
+    const RequestTypes = [{name:"PTO",value:1},{name:"Betegszabadság",value:2}, {name:"Kiküldetés",value:3}, {name:"Betervezett szabadság",value:4}]
     const [selectedRequestTypes, setSelectedRequestTypes] = useState<string | null> ("")
 
     const [canRequestValue, setCanRequestValue] = useState<boolean>();
@@ -130,6 +130,10 @@ function ManageWorkers () {
 
             const apiInput :PermissionUpdateDto = {Userid: currentUser, DepartmentId: Number(currentPermissonModify?.departmentId), CanDecide: canDecideValue ?? false, CanRequest: canRequestValue ?? false, CanRevoke: canRevokeValue ?? false}
             await api.Admin.putChangePermissions(apiInput)
+
+            const inputdata : GetUsersInputDto = {departmentIds : departmments, inputText: searchText}
+            const userDataResponse = await api.User.postGetUsersByParams(inputdata)
+            setUserData(userDataResponse.data?.data ?? [])
         }catch {
             notifications.show({
                 title:"Hiba",
@@ -378,7 +382,7 @@ function ManageWorkers () {
                                         <Table.Td style={{textAlign: "center"}}>{k.name}</Table.Td>
                                         <Table.Td style={{textAlign: "center"}}>{k.departmentName}</Table.Td>
                                         <Table.Td style={{textAlign: "center"}}>{k.employeeId}</Table.Td>
-                                        <Table.Td style={{textAlign: "center"}}>{k.role}</Table.Td>
+                                        <Table.Td style={{textAlign: "center"}}>{k.role === "User" ? "Dolgozó" : "Ügyintéző"}</Table.Td>
                                         <Table.Td style={{textAlign: "center"}}>{k.email}</Table.Td>
                                         <Table.Td style={{textAlign: "center",display: "flex", justifyContent: "center", alignItems: "center", gap: "10px"}}>
                                               <Button disabled={!HasPermissionToRequest(k.departmentName)} onClick={() => {OpenRequestModal(k.id); setcurrentUser(k.id)}}>
@@ -418,7 +422,6 @@ function ManageWorkers () {
                             placeholder="Például: Október 20, 2025 - Október 24, 2025"
                             style={{minWidth: 200}}
                             value={value}
-                            minDate={today}
                             onChange={setValue}
                             excludeDate={IsExcludedDate}
                             locale="hu"

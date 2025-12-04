@@ -4,4 +4,5 @@ export default interface StatDetailGetDto{
     pto: number,
     betegSzab: number,
     kikuldetes: number
+    betervezett: number
 }

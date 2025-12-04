@@ -3,4 +3,5 @@ export default interface secondChart {
     pto:number,
     betegSzab:number,
     kikuldetes:number
+    betervezett:number
 }

@@ -43,9 +43,10 @@ namespace PTO_Manager.Services
         public async Task<string> CreateRequestAsUser(RequestAddAsUserDto requestAddDto) //Még a nap nincsen csökkentve, az elérhető napopok, pedig még nincs növelve
         {
             var existingRequest = await _dbContext.Requests
+                .Include(k => k.RequestBlock)
                 .AnyAsync(x => x.Date >= requestAddDto.Begin_Date
                                && x.Date <= requestAddDto.End_Date
-                               && _aktualisFelhasznaloService.UserId == x.RequestBlock.UserId.ToString());
+                               && _aktualisFelhasznaloService.UserId == x.RequestBlock.UserId.ToString() && (x.RequestBlock.Status == HolidayStatus.Pending || x.RequestBlock.Status == HolidayStatus.Accepted));
             if (existingRequest)
             {
                 throw new Exception("Request already exists for this date");
@@ -373,7 +374,7 @@ namespace PTO_Manager.Services
         {
             var requestsBlocks = await _dbContext.RequestBlocks
                 .Include(k => k.Requests)
-                .Where(x => x.UserId.ToString() == requestsInputDto.userId && x.Status == HolidayStatus.Accepted || x.Status == HolidayStatus.Pending ).ToListAsync() ?? []; 
+                .Where(x => x.UserId.ToString() == requestsInputDto.userId && (x.Status == HolidayStatus.Accepted || x.Status == HolidayStatus.Pending )).ToListAsync() ?? []; 
             var specialDays = await _dbContext.SpecialDays.ToListAsync();
             List<ReservedDaysDto> dtos = [];
        
